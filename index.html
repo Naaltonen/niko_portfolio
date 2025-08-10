@@ -6,24 +6,26 @@
 <title>Niko Aaltonen — Portfolio</title>
 <style>
 :root {
-  --ink: #e9ebef;
-  --muted: #a9adb6;
-  --stroke: rgba(255, 255, 255, .08);
-  --panel: rgba(20, 20, 24, .55);
-  --c-bio: linear-gradient(120deg, #ff5f6d, #ffc371);
-  --c-soolo: linear-gradient(120deg, #36d1dc, #5b86e5);
-  --c-teatteri: linear-gradient(120deg, #ff6a00, #ee0979);
-  --c-elektro: linear-gradient(120deg, #8e2de2, #4a00e0);
-  --c-yhteys: linear-gradient(120deg, #56ab2f, #a8e063);
+  --ink:#e9ebef;
+  --muted:#a9adb6;
+  --stroke:rgba(255,255,255,.08);
+  --panel:rgba(20,20,24,.55);
+  --c-bio: linear-gradient(135deg, #243b55, #141e30);
+  --c-soolo: linear-gradient(135deg, #2b5876, #4e4376);
+  --c-teatteri: linear-gradient(135deg, #42275a, #734b6d);
+  --c-elektroninen: linear-gradient(135deg, #283048, #859398);
+  --c-yhteys: linear-gradient(135deg, #232526, #414345);
 }
+
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
 body {
   color: var(--ink);
-  background: #0b0d10;
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   line-height: 1.55;
-  transition: background 2s ease;
+  background: var(--c-bio);
+  background-size: 400% 400%;
+  transition: background 1s ease;
 }
 
 .wrap {
@@ -39,11 +41,8 @@ body {
 }
 
 .sidebar {
-  position: sticky;
-  top: 16px;
-  align-self: start;
-  display: grid;
-  gap: 10px;
+  position: sticky; top: 16px; align-self: start;
+  display: grid; gap: 10px;
 }
 .side-card {
   background: var(--panel);
@@ -51,7 +50,6 @@ body {
   border-radius: 14px;
   padding: 12px;
 }
-.side-grid { display: grid; gap: 10px; }
 .cat {
   display: block;
   text-decoration: none;
@@ -60,22 +58,21 @@ body {
   padding: 12px 14px;
   border-radius: 12px;
   border: 1px solid var(--stroke);
-  background: rgba(255, 255, 255, .04);
-  transition: .3s transform, .3s background, .3s border-color;
+  background: rgba(255,255,255,.04);
+  transition: .2s transform, .2s background, .2s border-color;
 }
 .cat:hover {
   transform: translateY(-2px);
-  background: rgba(255, 255, 255, .08);
-  border-color: rgba(255, 255, 255, .14);
+  background: rgba(255,255,255,.08);
+  border-color: rgba(255,255,255,.14);
 }
 
-.panel, .frame {
+.panel {
   background: var(--panel);
   border: 1px solid var(--stroke);
   border-radius: 14px;
   padding: 18px;
   backdrop-filter: blur(8px);
-  transition: border-color 2s ease, box-shadow 2s ease, background 2s ease;
 }
 
 .section { margin-bottom: 20px; }
@@ -85,13 +82,11 @@ body {
   overflow: hidden;
   position: relative;
   height: min(48vh, 520px);
+  background: transparent;
   border: 1px solid var(--stroke);
-  transition: background 2s ease;
 }
 .slide {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
+  position: absolute; inset: 0; opacity: 0;
   transition: opacity 1200ms ease-in-out;
   background-position: center;
   background-size: cover;
@@ -99,17 +94,16 @@ body {
 .slide.active { opacity: 1; }
 .hero::after {
   content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(11, 13, 16, .35), rgba(11, 13, 16, .75) 65%, rgba(11, 13, 16, .9));
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(11,13,16,.35), rgba(11,13,16,.75) 65%, rgba(11,13,16,.9));
 }
 
-h1, h2, h3 { margin: 0 0 .4rem; }
+h1,h2,h3 { margin: 0 0 .4rem; }
 h1 { font-size: clamp(28px, 4.8vw, 42px); }
 h2 { font-size: clamp(20px, 3.2vw, 26px); }
 p { margin: .5rem 0; }
-
 .muted { color: var(--muted); }
+
 .hr { border: none; border-top: 1px solid var(--stroke); margin: 12px 0; }
 </style>
 </head>
@@ -119,18 +113,18 @@ p { margin: .5rem 0; }
   <aside class="sidebar">
     <div class="side-card">
       <div class="side-grid">
-        <a class="cat" data-theme="bio" href="#bio">Bio</a>
-        <a class="cat" data-theme="soolo" href="#soolotuotanto">Soolotuotanto</a>
-        <a class="cat" data-theme="teatteri" href="#teatteri">Teatteri / Äänisuunnittelu</a>
-        <a class="cat" data-theme="elektro" href="#elektro">Elektroninen / Kokeellinen</a>
-        <a class="cat" data-theme="yhteys" href="#yhteys">Yhteystiedot</a>
+        <a class="cat" data-bg="bio" href="#bio">Bio</a>
+        <a class="cat" data-bg="soolo" href="#soolo">Soolotuotanto</a>
+        <a class="cat" data-bg="teatteri" href="#teatteri">Teatteri/Äänisuunnittelu</a>
+        <a class="cat" data-bg="elektroninen" href="#elektroninen">Elektroninen/Kokeellinen</a>
+        <a class="cat" data-bg="yhteys" href="#yhteys">Yhteystiedot</a>
       </div>
     </div>
   </aside>
 
   <main>
     <section class="section">
-      <div class="hero" id="hero" style="background: var(--c-bio);">
+      <div class="hero">
         <div class="slide active" style="background-image:url('images/Kuva 1.jpeg')"></div>
         <div class="slide" style="background-image:url('images/Kuva 2.jpeg')"></div>
         <div class="slide" style="background-image:url('images/Kuva 3.jpeg')"></div>
@@ -141,23 +135,22 @@ p { margin: .5rem 0; }
       <h1>Niko Aaltonen</h1>
       <p class="muted">Säveltäjä • äänisuunnittelija • monialainen taiteilija</p>
       <hr class="hr">
-      <p>Niko Aaltonen on säveltäjä, äänisuunnittelija ja monialainen taiteilija Turusta. Hänen taustansa musiikkituotannon ja teatterin parissa näkyy työssä, jossa yhdistyvät tunnelmalliset äänimaisemat ja vahva emotionaalinen syvyys. Niko luo musiikkia ja äänisuunnittelua, jotka kertovat tarinoita, herättävät muistoja ja tukevat esitysten visuaalista ja dramaturgista kokonaisuutta. Hänen äänimaailmansa liikkuvat klassisen musiikin, pop/rockin ja elektronisen kokeellisuuden välillä – rajoja pelottomasti rikkoen.</p>
-      <p>Nikon musiikillinen polku alkoi jo nuorena, kun hän osti ensimmäisen kitaransa. Vuosien varrella hän on syventynyt intohimoisesti musiikin eri osa-alueisiin ja opiskellut laajasti useita genrejä ja soittimia, kuten bassoa, rumpuja ja laulua. Hän valmistui muusikoksi Turun konservatoriosta ja palveli tämän jälkeen Puolustusvoimien varusmiessoittokunnassa, josta hän valmistui aliupseerina. Tällä hetkellä Niko opiskelee musiikkipedagogiksi ja jatkaa monipuolista musiikin tekemistä eri muodoissa.</p>
+      <p>Niko Aaltonen on säveltäjä, äänisuunnittelija ja monialainen taiteilija Turusta. Hänen taustansa musiikkituotannon ja teatterin parissa näkyy työssä, jossa yhdistyvät tunnelmalliset äänimaisemat ja vahva emotionaalinen syvyys. Niko luo musiikkia ja äänisuunnittelua, jotka kertovat tarinoita, herättävät muistoja ja tukevat esitysten visuaalista ja dramaturgista kokonaisuutta. Hänen äänimaailmansa liikkuvat klassisen musiikin, pop/rockin ja elektronisen kokeellisuuden välillä – rajoja pelottomasti rikkoen. Nikon musiikillinen polku alkoi jo nuorena, kun hän osti ensimmäisen kitaransa. Vuosien varrella hän on syventynyt intohimoisesti musiikin eri osa-alueisiin ja opiskellut laajasti useita genrejä ja soittimia, kuten bassoa, rumpuja ja laulua. Hän valmistui muusikoksi Turun konservatoriosta ja palveli tämän jälkeen Puolustusvoimien varusmiessoittokunnassa, josta hän valmistui aliupseerina. Tällä hetkellä Niko opiskelee musiikkipedagogiksi ja jatkaa monipuolista musiikin tekemistä eri muodoissa.</p>
     </section>
 
-    <section id="soolotuotanto" class="section panel">
+    <section id="soolo" class="section panel">
       <h2>Soolotuotanto</h2>
-      <p class="muted">Tulossa...</p>
+      <p>Tulossa...</p>
     </section>
 
     <section id="teatteri" class="section panel">
-      <h2>Teatteri / Äänisuunnittelu</h2>
-      <p class="muted">Tulossa...</p>
+      <h2>Teatteri/Äänisuunnittelu</h2>
+      <p>Tässä tulee teatterimusiikkisi ja äänisuunnittelutyösi esittely.</p>
     </section>
 
-    <section id="elektro" class="section panel">
-      <h2>Elektroninen / Kokeellinen</h2>
-      <p class="muted">Tulossa...</p>
+    <section id="elektroninen" class="section panel">
+      <h2>Elektroninen/Kokeellinen</h2>
+      <p>Tulossa...</p>
     </section>
 
     <section id="yhteys" class="section panel">
@@ -170,29 +163,26 @@ p { margin: .5rem 0; }
 <script>
 const slides = document.querySelectorAll('.slide');
 let i = 0;
-setInterval(() => {
+setInterval(()=> {
   slides[i].classList.remove('active');
   i = (i + 1) % slides.length;
   slides[i].classList.add('active');
 }, 7000);
 
-const themes = {
-  bio: 'var(--c-bio)',
-  soolo: 'var(--c-soolo)',
-  teatteri: 'var(--c-teatteri)',
-  elektro: 'var(--c-elektro)',
-  yhteys: 'var(--c-yhteys)'
+const body = document.body;
+const gradients = {
+  bio: getComputedStyle(document.documentElement).getPropertyValue('--c-bio'),
+  soolo: getComputedStyle(document.documentElement).getPropertyValue('--c-soolo'),
+  teatteri: getComputedStyle(document.documentElement).getPropertyValue('--c-teatteri'),
+  elektroninen: getComputedStyle(document.documentElement).getPropertyValue('--c-elektroninen'),
+  yhteys: getComputedStyle(document.documentElement).getPropertyValue('--c-yhteys')
 };
 
-document.querySelectorAll('.cat').forEach(link => {
-  link.addEventListener('click', () => {
-    const theme = link.dataset.theme;
-    document.body.style.background = themes[theme];
-    document.getElementById('hero').style.background = themes[theme];
-    document.querySelectorAll('.panel').forEach(p => {
-      p.style.borderColor = 'rgba(255,255,255,.2)';
-      p.style.boxShadow = `0 0 20px ${themes[theme]}`;
-    });
+document.querySelectorAll('.cat').forEach(cat => {
+  cat.addEventListener('click', e => {
+    const bgKey = cat.dataset.bg;
+    body.style.background = gradients[bgKey];
+    body.style.backgroundSize = "400% 400%";
   });
 });
 </script>
