@@ -1,150 +1,205 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fi">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Niko Aaltonen — Portfolio</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="UTF-8">
+<title>Niko Aaltonen – Portfolio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+/* ----- Background Slideshow ----- */
+body, html {
+  margin: 0; padding: 0; height: 100%;
+  font-family: Arial, sans-serif; color: white;
+}
+.bg-slideshow {
+  position: fixed; inset: 0;
+  z-index: -2;
+}
+.bg-slideshow img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover;
+  opacity: 0; transition: opacity 2s ease-in-out;
+}
+.bg-slideshow img.active {
+  opacity: 1;
+}
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(10px);
+  z-index: -1;
+}
+
+/* ----- Sections ----- */
+.container {
+  max-width: 900px; margin: auto; padding: 40px;
+}
+.ws-section {
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  padding: 18px;
+  margin: 28px 0;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.ws-section h2 { margin: 0 0 8px; }
+.ws-section .ws-desc { opacity: 0.8; margin: 0.25rem 0 1rem; }
+
+/* ----- Section Colors ----- */
+:root {
+  --c-selli: #ff4444;
+  --c-meri: #ffbb33;
+  --c-mimmi: turquoise;
+}
+.theme-selli { box-shadow: inset 0 0 0 3px color-mix(in oklab, var(--c-selli) 25%, transparent); }
+.theme-merituulet { box-shadow: inset 0 0 0 3px color-mix(in oklab, var(--c-meri) 25%, transparent); }
+.theme-mimmi { box-shadow: inset 0 0 0 3px color-mix(in oklab, var(--c-mimmi) 25%, transparent); }
+
+/* ----- Audio Cards ----- */
+.ws-card {
+  display: grid; gap: 10px; padding: 14px;
+  border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04);
+}
+.ws-row {
+  display: grid; grid-template-columns: auto 1fr auto;
+  gap: 12px; align-items: center;
+}
+.ws-title { font-weight: 600; opacity: 0.95; }
+.ws-play {
+  width: 44px; height: 44px; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.06);
+  color: white; font-size: 18px; cursor: pointer;
+}
+.ws-play:hover { background: rgba(255,255,255,0.1); }
+.ws-wave { height: 64px; }
+.ws-time { font-variant-numeric: tabular-nums; opacity: 0.8; }
+
+/* Progress bar overlay */
+.ws-canvas { position: relative; }
+.ws-base { opacity: 0.45; }
+.ws-progress {
+  position: absolute; inset: 0 0 0 0;
+  opacity: 0.9; pointer-events: none; mix-blend-mode: screen;
+}
+
+/* Section progress colors */
+.theme-selli .ws-progress { background: var(--c-selli); }
+.theme-merituulet .ws-progress { background: var(--c-meri); }
+.theme-mimmi .ws-progress { background: var(--c-mimmi); }
+</style>
 </head>
 <body>
-  <div class="bg">
-    <img src="/images/kuva1.jpg" alt="" class="bg-img i1" loading="lazy">
-    <img src="/images/kuva2.jpg" alt="" class="bg-img i2" loading="lazy">
-    <img src="/images/kuva3.jpg" alt="" class="bg-img i3" loading="lazy">
-    <div class="bg-overlay"></div>
-  </div>
 
-  <header class="nav glass">
-    <div class="brand">Niko Aaltonen</div>
-    <nav>
-      <a href="#music">Musiikki</a>
-      <a href="#theatre-sound">Teatteri / Äänisuunnittelu</a>
-      <a href="#bio">Bio</a>
-      <a href="#contact">Yhteys</a>
-    </nav>
-  </header>
+<div class="bg-slideshow">
+  <img src="images/Kuva 1.jpeg" class="active">
+  <img src="images/Kuva 2.jpeg">
+  <img src="images/Kuva 3.jpeg">
+</div>
+<div class="overlay"></div>
 
-  <section class="hero">
-    <h1>Niko Aaltonen</h1>
-    <p>Säveltäjä • äänisuunnittelija • monialainen taiteilija</p>
-    <div class="cta">
-      <a class="btn" href="#theatre-sound">Kuuntele</a>
-      <a class="btn ghost" href="#bio">Lue lisää</a>
-    </div>
+<div class="container">
+  <h1>Niko Aaltonen – Portfolio</h1>
+
+  <!-- Selli -->
+  <section class="ws-section theme-selli">
+    <h2>Musiikkia näytelmästä "Selli"</h2>
+    <div class="ws-track" data-src="audio/selli_2naytos6kohtaus.mp3" data-title="Teeman huipennus"></div>
+    <div class="ws-track" data-src="audio/selli_4naytos1kohtaus.mp3" data-title="Järkensä menettänyt"></div>
   </section>
 
-  <main class="content">
-    <!-- Selli section -->
-    <section id="theatre-sound" class="card glass theatre">
-      <header class="section-head">
-        <h2>Musiikkia näytelmästä <em>Selli</em></h2>
-        <p class="muted">Valikoidut kohtaukset. Kuuntele waveformin kautta.</p>
-      </header>
+  <!-- Merituulet -->
+  <section class="ws-section theme-merituulet">
+    <h2>Merituulet</h2>
+    <p class="ws-desc">Toivonsa kätkenyt – Rohkea ja tulinen</p>
+    <div class="ws-track" data-src="audio/Merituulet.mp3" data-title="Merituulet"></div>
+  </section>
 
-      <div class="ws-list">
-        <!-- Track 1 -->
-        <article class="ws-track glass" data-src="/audio/selli_2naytos6kohtaus.mp3">
-          <div class="ws-meta">
-            <h3>Teeman huipennus</h3>
-            <p class="note stylized">Toisen näytöksen loppuhuipennus, täynnä traumaa ja voimakkaita tunteita.</p>
-          </div>
-          <div class="ws-controls">
-            <button class="ws-play" aria-label="Play/Pause">▶</button>
-            <div class="ws-wave" aria-hidden="true"></div>
-            <div class="ws-time"><span class="curr">0:00</span> / <span class="dur">–:–</span></div>
-          </div>
-        </article>
+  <!-- Mimmi -->
+  <section class="ws-section theme-mimmi">
+    <h2>Musiikkia näytelmästä "Mimmilehmän ja Variksen kesäpäivä laitumella"</h2>
+    <div class="ws-track" data-src="audio/Intromusa.mp3" data-title="Intromusa"></div>
+    <div class="ws-track" data-src="audio/Jännitys ja Skrätsi.mp3" data-title="Jännitys ja Skrätsi"></div>
+    <div class="ws-track" data-src="audio/Varis odottaa.mp3" data-title="Varis odottaa"></div>
+    <div class="ws-track" data-src="audio/39. Toka tanssi.mp3" data-title="Toka tanssi"></div>
+    <div class="ws-track" data-src="audio/Viimeinen tanssi.mp3" data-title="Viimeinen tanssi"></div>
+  </section>
+</div>
 
-        <!-- Track 2 -->
-        <article class="ws-track glass" data-src="/audio/selli_4naytos1kohtaus.mp3">
-          <div class="ws-meta">
-            <h3>Järkensä menettänyt</h3>
-            <p class="note stylized">Musiikki murtuneesta miehestä.</p>
-          </div>
-          <div class="ws-controls">
-            <button class="ws-play" aria-label="Play/Pause">▶</button>
-            <div class="ws-wave" aria-hidden="true"></div>
-            <div class="ws-time"><span class="curr">0:00</span> / <span class="dur">–:–</span></div>
-          </div>
-        </article>
+<!-- Wavesurfer -->
+<script src="https://unpkg.com/wavesurfer.js@7"></script>
+<script>
+/* Background slideshow */
+const slides = document.querySelectorAll('.bg-slideshow img');
+let idx = 0;
+setInterval(() => {
+  slides[idx].classList.remove('active');
+  idx = (idx + 1) % slides.length;
+  slides[idx].classList.add('active');
+}, 5000);
+
+/* Time format helper */
+const fmt = s => !isFinite(s) ? '–:–' : `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+
+/* Build players */
+const tracks = document.querySelectorAll('.ws-track');
+let currentWS = null;
+
+tracks.forEach((el) => {
+  const url = encodeURI(el.dataset.src);
+  const title = el.dataset.title || 'Audio';
+
+  el.innerHTML = `
+    <div class="ws-card">
+      <div class="ws-title">${title}</div>
+      <div class="ws-row">
+        <button class="ws-play" aria-label="Play/Pause">▶</button>
+        <div class="ws-canvas">
+          <div class="ws-wave"></div>
+          <div class="ws-progress"></div>
+        </div>
+        <div class="ws-time"><span class="curr">0:00</span> / <span class="dur">–:–</span></div>
       </div>
-    </section>
+    </div>
+  `;
 
-    <!-- Bio -->
-    <section id="bio" class="card glass">
-      <h2>Bio</h2>
-      <p>Niko Aaltonen on säveltäjä, äänisuunnittelija ja monialainen taiteilija Turusta. Hänen taustansa musiikkituotannon ja teatterin parissa näkyy työssä, jossa yhdistyvät tunnelmalliset äänimaisemat ja vahva emotionaalinen syvyys. Niko luo musiikkia ja äänisuunnittelua, jotka kertovat tarinoita, herättävät muistoja ja tukevat esitysten visuaalista ja dramaturgista kokonaisuutta. Hänen äänimaailmansa liikkuvat klassisen musiikin, pop/rockin ja elektronisen kokeellisuuden välillä – rajoja pelottomasti rikkoen. …</p>
-    </section>
+  const btn = el.querySelector('.ws-play');
+  const waveEl = el.querySelector('.ws-wave');
+  const curr = el.querySelector('.curr');
+  const dur  = el.querySelector('.dur');
+  const progressBar = el.querySelector('.ws-progress');
 
-    <!-- Contact -->
-    <section id="contact" class="card glass">
-      <h2>Yhteys</h2>
-      <p><a href="mailto:sinun.sahkoposti@esimerkki.com">sinun.sahkoposti@esimerkki.com</a></p>
-    </section>
-  </main>
+  const ws = WaveSurfer.create({
+    container: waveEl,
+    height: 64,
+    waveColor: 'rgba(255,255,255,0.35)',
+    progressColor: 'rgba(255,255,255,0)',
+    cursorColor: 'rgba(255,255,255,0.6)',
+    barWidth: 2, barGap: 2, barRadius: 2,
+    normalize: true,
+    url,
+    responsive: true,
+  });
 
-  <!-- Wavesurfer CDN -->
-  <script src="https://unpkg.com/wavesurfer.js@7"></script>
+  ws.on('ready', () => dur.textContent = fmt(ws.getDuration()));
+  ws.on('timeupdate', t => {
+    curr.textContent = fmt(t);
+    const pct = ws.getDuration() ? (t / ws.getDuration()) * 100 : 0;
+    progressBar.style.width = pct + '%';
+  });
+  ws.on('finish', () => { btn.textContent = '▶'; progressBar.style.width = '0%'; });
 
-  <script>
-    const fmt = s => {
-      if (!isFinite(s)) return '–:–';
-      s = Math.max(0, s|0);
-      const m = (s/60|0), ss = String(s%60).padStart(2,'0');
-      return `${m}:${ss}`;
-    };
+  function playPause() {
+    if (currentWS && currentWS !== ws) currentWS.pause();
+    ws.playPause();
+    currentWS = ws.isPlaying() ? ws : null;
+    btn.textContent = ws.isPlaying() ? '⏸' : '▶';
+  }
 
-    const tracks = document.querySelectorAll('.ws-track');
-    let currentWS = null;
-
-    tracks.forEach(card => {
-      const btn = card.querySelector('.ws-play');
-      const waveEl = card.querySelector('.ws-wave');
-      const curr = card.querySelector('.curr');
-      const dur  = card.querySelector('.dur');
-      const src  = card.dataset.src;
-
-      const ws = WaveSurfer.create({
-        container: waveEl,
-        height: 64,
-        waveColor: 'rgba(255,255,255,0.45)',
-        progressColor: 'rgba(255,255,255,0.9)',
-        cursorColor: 'rgba(255,255,255,0.6)',
-        barWidth: 2,
-        barGap: 2,
-        barRadius: 2,
-        responsive: true,
-        url: src,
-      });
-
-      ws.on('ready', () => { if (dur) dur.textContent = fmt(ws.getDuration()); });
-      ws.on('timeupdate', t => { if (curr) curr.textContent = fmt(t); });
-      ws.on('finish', () => btn.textContent = '▶');
-
-      function playPause() {
-        if (currentWS && currentWS !== ws) currentWS.pause();
-        ws.playPause();
-        currentWS = ws.isPlaying() ? ws : null;
-        btn.textContent = ws.isPlaying() ? '⏸' : '▶';
-      }
-
-      btn.addEventListener('click', playPause);
-      waveEl.addEventListener('click', () => { if (!ws.isPlaying()) playPause(); });
-
-      card.tabIndex = 0;
-      card.addEventListener('keydown', e => {
-        if (e.code === 'Space') { e.preventDefault(); playPause(); }
-      });
-    });
-
-    // Parallax bg
-    document.addEventListener('scroll', () => {
-      const y = window.scrollY;
-      document.documentElement.style.setProperty('--parallax', y * 0.05 + 'px');
-    });
-  </script>
+  btn.addEventListener('click', playPause);
+  waveEl.addEventListener('click', () => { if (!ws.isPlaying()) playPause(); });
+  el.addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); playPause(); } });
+});
+</script>
 </body>
 </html>
-
