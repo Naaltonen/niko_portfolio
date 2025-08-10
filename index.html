@@ -10,181 +10,206 @@
   --muted:#a9adb6;
   --stroke:rgba(255,255,255,.08);
   --panel:rgba(20,20,24,.55);
-  --c-bio: linear-gradient(135deg, #243b55, #141e30);
-  --c-soolo: linear-gradient(135deg, #2b5876, #4e4376);
-  --c-teatteri: linear-gradient(135deg, #42275a, #734b6d);
-  --c-elektroninen: linear-gradient(135deg, #283048, #859398);
-  --c-yhteys: linear-gradient(135deg, #232526, #414345);
+  --c-bio:rgba(80,80,100,0.45);
+  --c-soolo:rgba(120,90,150,0.45);
+  --c-teatteri:rgba(120,40,40,0.45);
+  --c-elektr:rgba(40,90,120,0.45);
+  --c-yhteys:rgba(40,100,60,0.45);
 }
-
-* { box-sizing: border-box; }
-html, body { height: 100%; margin: 0; }
+*{box-sizing:border-box}
 body {
-  color: var(--ink);
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  line-height: 1.55;
-  background: var(--c-bio);
-  background-size: 400% 400%;
-  transition: background 1s ease;
+  margin:0;
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  color:var(--ink);
+  background:#0b0d10;
+  transition:background 1s ease;
 }
-
 .wrap {
-  display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
+  display:grid;
+  grid-template-columns:260px 1fr;
+  gap:20px;
+  max-width:1200px;
+  margin:0 auto;
+  padding:20px;
 }
-@media (max-width: 900px) {
-  .wrap { grid-template-columns: 1fr; padding: 12px; }
-}
+@media (max-width:900px){ .wrap{grid-template-columns:1fr;} }
 
 .sidebar {
-  position: sticky; top: 16px; align-self: start;
-  display: grid; gap: 10px;
-}
-.side-card {
-  background: var(--panel);
-  border: 1px solid var(--stroke);
-  border-radius: 14px;
-  padding: 12px;
+  position:sticky; top:16px; align-self:start;
+  display:grid; gap:10px;
 }
 .cat {
-  display: block;
-  text-decoration: none;
-  color: var(--ink);
-  font-weight: 600;
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: 1px solid var(--stroke);
-  background: rgba(255,255,255,.04);
-  transition: .2s transform, .2s background, .2s border-color;
+  display:block; padding:12px 14px;
+  border-radius:12px;
+  text-decoration:none; color:var(--ink);
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--stroke);
+  font-weight:600;
+  transition:.2s;
 }
 .cat:hover {
-  transform: translateY(-2px);
-  background: rgba(255,255,255,.08);
-  border-color: rgba(255,255,255,.14);
+  background:rgba(255,255,255,.08);
+  transform:translateY(-2px);
 }
-
-.panel {
-  background: var(--panel);
-  border: 1px solid var(--stroke);
-  border-radius: 14px;
-  padding: 18px;
-  backdrop-filter: blur(8px);
-}
-
-.section { margin-bottom: 20px; }
-
 .hero {
-  border-radius: 14px;
-  overflow: hidden;
-  position: relative;
-  height: min(48vh, 520px);
-  background: transparent;
-  border: 1px solid var(--stroke);
+  border-radius:14px;
+  overflow:hidden;
+  position:relative;
+  height:min(48vh,520px);
+  background:#111;
+  border:1px solid var(--stroke);
 }
-.slide {
-  position: absolute; inset: 0; opacity: 0;
-  transition: opacity 1200ms ease-in-out;
-  background-position: center;
-  background-size: cover;
+.hero img {
+  position:absolute;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  opacity:0;
+  transition:opacity 1s ease-in-out;
+  background:#0b0d10;
 }
-.slide.active { opacity: 1; }
+.hero img.active { opacity:1; }
 .hero::after {
-  content: "";
-  position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(11,13,16,.35), rgba(11,13,16,.75) 65%, rgba(11,13,16,.9));
+  content:"";
+  position:absolute; inset:0;
+  background:linear-gradient(180deg, rgba(11,13,16,.35), rgba(11,13,16,.75) 65%, rgba(11,13,16,.9));
 }
-
-h1,h2,h3 { margin: 0 0 .4rem; }
-h1 { font-size: clamp(28px, 4.8vw, 42px); }
-h2 { font-size: clamp(20px, 3.2vw, 26px); }
-p { margin: .5rem 0; }
-.muted { color: var(--muted); }
-
-.hr { border: none; border-top: 1px solid var(--stroke); margin: 12px 0; }
+.panel {
+  background:var(--panel);
+  border:1px solid var(--stroke);
+  border-radius:14px;
+  padding:18px;
+  backdrop-filter: blur(8px);
+  transition:background 1s ease;
+}
+h1,h2,h3{margin:0 0 .5rem;}
+p{margin:.5rem 0;}
+.center { text-align:center; font-size:1.2rem; opacity:0.85; padding:40px 0; }
 </style>
 </head>
 <body>
 
 <div class="wrap">
+  <!-- Sidebar -->
   <aside class="sidebar">
-    <div class="side-card">
-      <div class="side-grid">
-        <a class="cat" data-bg="bio" href="#bio">Bio</a>
-        <a class="cat" data-bg="soolo" href="#soolo">Soolotuotanto</a>
-        <a class="cat" data-bg="teatteri" href="#teatteri">Teatteri/Äänisuunnittelu</a>
-        <a class="cat" data-bg="elektroninen" href="#elektroninen">Elektroninen/Kokeellinen</a>
-        <a class="cat" data-bg="yhteys" href="#yhteys">Yhteystiedot</a>
-      </div>
-    </div>
+    <a href="#" class="cat" data-cat="bio">Bio</a>
+    <a href="#" class="cat" data-cat="soolo">Soolotuotanto</a>
+    <a href="#" class="cat" data-cat="teatteri">Teatteri / Äänisuunnittelu</a>
+    <a href="#" class="cat" data-cat="elektr">Elektroninen / Kokeellinen</a>
+    <a href="#" class="cat" data-cat="yhteys">Yhteystiedot</a>
   </aside>
 
+  <!-- Main -->
   <main>
-    <section class="section">
-      <div class="hero">
-        <div class="slide active" style="background-image:url('images/Kuva 1.jpeg')"></div>
-        <div class="slide" style="background-image:url('images/Kuva 2.jpeg')"></div>
-        <div class="slide" style="background-image:url('images/Kuva 3.jpeg')"></div>
-      </div>
-    </section>
+    <!-- Slideshow -->
+    <div class="hero">
+      <img src="images/Kuva 1.jpeg" class="active" alt="">
+      <img src="images/Kuva 2.jpeg" alt="">
+      <img src="images/Kuva 3.jpeg" alt="">
+    </div>
 
-    <section id="bio" class="section panel">
-      <h1>Niko Aaltonen</h1>
-      <p class="muted">Säveltäjä • äänisuunnittelija • monialainen taiteilija</p>
-      <hr class="hr">
-      <p>Niko Aaltonen on säveltäjä, äänisuunnittelija ja monialainen taiteilija Turusta. Hänen taustansa musiikkituotannon ja teatterin parissa näkyy työssä, jossa yhdistyvät tunnelmalliset äänimaisemat ja vahva emotionaalinen syvyys. Niko luo musiikkia ja äänisuunnittelua, jotka kertovat tarinoita, herättävät muistoja ja tukevat esitysten visuaalista ja dramaturgista kokonaisuutta. Hänen äänimaailmansa liikkuvat klassisen musiikin, pop/rockin ja elektronisen kokeellisuuden välillä – rajoja pelottomasti rikkoen. Nikon musiikillinen polku alkoi jo nuorena, kun hän osti ensimmäisen kitaransa. Vuosien varrella hän on syventynyt intohimoisesti musiikin eri osa-alueisiin ja opiskellut laajasti useita genrejä ja soittimia, kuten bassoa, rumpuja ja laulua. Hän valmistui muusikoksi Turun konservatoriosta ja palveli tämän jälkeen Puolustusvoimien varusmiessoittokunnassa, josta hän valmistui aliupseerina. Tällä hetkellä Niko opiskelee musiikkipedagogiksi ja jatkaa monipuolista musiikin tekemistä eri muodoissa.</p>
-    </section>
-
-    <section id="soolo" class="section panel">
-      <h2>Soolotuotanto</h2>
-      <p>Tulossa...</p>
-    </section>
-
-    <section id="teatteri" class="section panel">
-      <h2>Teatteri/Äänisuunnittelu</h2>
-      <p>Tässä tulee teatterimusiikkisi ja äänisuunnittelutyösi esittely.</p>
-    </section>
-
-    <section id="elektroninen" class="section panel">
-      <h2>Elektroninen/Kokeellinen</h2>
-      <p>Tulossa...</p>
-    </section>
-
-    <section id="yhteys" class="section panel">
-      <h2>Yhteystiedot</h2>
-      <p><a href="mailto:sinun.sahkoposti@esimerkki.com" style="color:var(--ink)">sinun.sahkoposti@esimerkki.com</a></p>
-    </section>
+    <!-- Content -->
+    <div id="content" class="panel" style="margin-top:20px;"></div>
   </main>
 </div>
 
+<script src="https://unpkg.com/wavesurfer.js@7"></script>
 <script>
-const slides = document.querySelectorAll('.slide');
-let i = 0;
-setInterval(()=> {
-  slides[i].classList.remove('active');
-  i = (i + 1) % slides.length;
-  slides[i].classList.add('active');
-}, 7000);
+/* Slideshow */
+const slides=document.querySelectorAll('.hero img');
+let si=0;
+setInterval(()=>{
+  slides[si].classList.remove('active');
+  si=(si+1)%slides.length;
+  slides[si].classList.add('active');
+},7000);
 
-const body = document.body;
-const gradients = {
-  bio: getComputedStyle(document.documentElement).getPropertyValue('--c-bio'),
-  soolo: getComputedStyle(document.documentElement).getPropertyValue('--c-soolo'),
-  teatteri: getComputedStyle(document.documentElement).getPropertyValue('--c-teatteri'),
-  elektroninen: getComputedStyle(document.documentElement).getPropertyValue('--c-elektroninen'),
-  yhteys: getComputedStyle(document.documentElement).getPropertyValue('--c-yhteys')
+/* Content per category */
+const content=document.getElementById('content');
+const body=document.body;
+
+const bioHTML=`
+<h1>Niko Aaltonen</h1>
+<p class="muted">Säveltäjä • äänisuunnittelija • monialainen taiteilija</p>
+<hr>
+<p>Niko Aaltonen on säveltäjä, äänisuunnittelija ja monialainen taiteilija Turusta. Hänen taustansa musiikkituotannon ja teatterin parissa näkyy työssä, jossa yhdistyvät tunnelmalliset äänimaisemat ja vahva emotionaalinen syvyys. Niko luo musiikkia ja äänisuunnittelua, jotka kertovat tarinoita, herättävät muistoja ja tukevat esitysten visuaalista ja dramaturgista kokonaisuutta. Hänen äänimaailmansa liikkuvat klassisen musiikin, pop/rockin ja elektronisen kokeellisuuden välillä – rajoja pelottomasti rikkoen.</p>
+<p>Nikon musiikillinen polku alkoi jo nuorena, kun hän osti ensimmäisen kitaransa. Vuosien varrella hän on syventynyt intohimoisesti musiikin eri osa-alueisiin ja opiskellut laajasti useita genrejä ja soittimia, kuten bassoa, rumpuja ja laulua. Hän valmistui muusikoksi Turun konservatoriosta ja palveli tämän jälkeen Puolustusvoimien varusmiessoittokunnassa, josta hän valmistui aliupseerina. Tällä hetkellä Niko opiskelee musiikkipedagogiksi ja jatkaa monipuolista musiikin tekemistä eri muodoissa.</p>
+`;
+
+const sooloHTML=`<div class="center">Tulossa…</div>`;
+
+const teatteriHTML=`
+<h2>Musiikkia näytelmästä “Selli”</h2>
+<div class="ws-track" data-src="audio/selli_2naytos6kohtaus.mp3" data-title="Teeman huipennus"></div>
+<div class="ws-track" data-src="audio/selli_4naytos1kohtaus.mp3" data-title="Järkensä menettänyt"></div>
+<h2 style="margin-top:20px;">Merituulet</h2>
+<p class="muted">Toivonsa kätkenyt – Rohkea ja tulinen</p>
+<div class="ws-track" data-src="audio/Merituulet.mp3" data-title="Merituulet"></div>
+<h2 style="margin-top:20px;">Musiikkia näytelmästä “Mimmilehmän ja Variksen kesäpäivä laitumella”</h2>
+<div class="ws-track" data-src="audio/Intromusa.mp3" data-title="Intromusa"></div>
+<div class="ws-track" data-src="audio/Jännitys ja Skrätsi.mp3" data-title="Jännitys ja Skrätsi"></div>
+<div class="ws-track" data-src="audio/Varis odottaa.mp3" data-title="Varis odottaa"></div>
+<div class="ws-track" data-src="audio/39. Toka tanssi.mp3" data-title="Toka tanssi"></div>
+<div class="ws-track" data-src="audio/Viimeinen tanssi.mp3" data-title="Viimeinen tanssi"></div>
+`;
+
+const elektrHTML=`<div class="center">Tulossa…</div>`;
+const yhteysHTML=`<h2>Yhteystiedot</h2><p><a href="mailto:sinun.sahkoposti@esimerkki.com" style="color:var(--ink)">sinun.sahkoposti@esimerkki.com</a></p>`;
+
+/* Category color mapping */
+const catColors={
+  bio:'var(--c-bio)',
+  soolo:'var(--c-soolo)',
+  teatteri:'var(--c-teatteri)',
+  elektr:'var(--c-elektr)',
+  yhteys:'var(--c-yhteys)'
 };
 
-document.querySelectorAll('.cat').forEach(cat => {
-  cat.addEventListener('click', e => {
-    const bgKey = cat.dataset.bg;
-    body.style.background = gradients[bgKey];
-    body.style.backgroundSize = "400% 400%";
+/* Load category */
+function loadCat(cat){
+  content.style.opacity=0;
+  setTimeout(()=>{
+    body.style.background=catColors[cat] || '#0b0d10';
+    content.style.background=catColors[cat] || 'var(--panel)';
+    if(cat==='bio') content.innerHTML=bioHTML;
+    else if(cat==='soolo') content.innerHTML=sooloHTML;
+    else if(cat==='teatteri') {content.innerHTML=teatteriHTML; initWaves();}
+    else if(cat==='elektr') content.innerHTML=elektrHTML;
+    else if(cat==='yhteys') content.innerHTML=yhteysHTML;
+    content.style.opacity=1;
+  },400);
+}
+
+/* Init Wavesurfer players */
+function initWaves(){
+  document.querySelectorAll('.ws-track').forEach(el=>{
+    const url=el.dataset.src;
+    const title=el.dataset.title;
+    el.innerHTML=`
+      <div><strong>${title}</strong></div>
+      <div class="player"></div>
+    `;
+    const ws=WaveSurfer.create({
+      container:el.querySelector('.player'),
+      waveColor:'rgba(255,255,255,0.35)',
+      progressColor:'rgba(255,255,255,0.7)',
+      height:64,
+      barWidth:2, barGap:2, barRadius:2,
+      normalize:true, url
+    });
+  });
+}
+
+/* Sidebar click */
+document.querySelectorAll('.cat').forEach(btn=>{
+  btn.addEventListener('click',e=>{
+    e.preventDefault();
+    loadCat(btn.dataset.cat);
   });
 });
+
+/* Default load */
+loadCat('bio');
 </script>
 </body>
 </html>
