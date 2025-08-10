@@ -9,13 +9,17 @@
 :root{
   --ink:#e9ebef; --muted:#a9adb6; --stroke:rgba(255,255,255,.08);
   --panel:rgba(20,20,24,.55);
+  --panel-tint: transparent;   /* updated per category */
+  --bg:#0b0d10;                /* updated per category */
   --c-selli:#ff4444; --c-meri:#ffbb33; --c-mimmi:turquoise;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
   margin:0; color:var(--ink);
-  background:#0b0d10; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  background:var(--bg);
+  transition: background-color .6s ease;
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
   line-height:1.55;
 }
 
@@ -28,13 +32,14 @@ body{
   .wrap{grid-template-columns:1fr; padding:12px}
 }
 
-/* Sticky sidebar (category columns) */
+/* Sticky sidebar (category list) */
 .sidebar{
   position:sticky; top:16px; align-self:start;
   display:grid; gap:10px;
 }
 .side-card{
   background:var(--panel); border:1px solid var(--stroke); border-radius:14px; padding:12px;
+  backdrop-filter: blur(8px);
 }
 .side-grid{display:grid; gap:10px}
 .cat{
@@ -43,36 +48,31 @@ body{
   background:rgba(255,255,255,.04); transition:.2s transform,.2s background,.2s border-color;
 }
 .cat:hover{transform:translateY(-2px); background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.14)}
-.cat.selli{box-shadow:inset 0 0 0 2px color-mix(in oklab, var(--c-selli) 35%, transparent)}
-.cat.merituulet{box-shadow:inset 0 0 0 2px color-mix(in oklab, var(--c-meri) 35%, transparent)}
-.cat.mimmi{box-shadow:inset 0 0 0 2px color-mix(in oklab, var(--c-mimmi) 45%, transparent)}
+.cat.active{outline:2px solid rgba(255,255,255,.18)}
 
 /* ====== Content panels ====== */
-.panel{
-  background:var(--panel); border:1px solid var(--stroke); border-radius:14px; padding:18px;
+.panel, .frame{
+  background:
+    linear-gradient(0deg, var(--panel-tint), var(--panel-tint)),
+    var(--panel);
+  border:1px solid var(--stroke); border-radius:14px; padding:18px;
   backdrop-filter: blur(8px);
+  transition: background-color .6s ease, box-shadow .6s ease, border-color .6s ease;
 }
 .section{margin-bottom:20px}
 
-/* ====== Hero slideshow above the bio ====== */
+/* ====== Hero slideshow above content ====== */
 .hero{
   border-radius:14px; overflow:hidden; position:relative; height:min(48vh,520px);
-  background:#111; border:1px solid var(--stroke);
+  background:#000; border:1px solid var(--stroke);
 }
 .slide{
   position:absolute; inset:0; opacity:0; transition:opacity 1200ms ease-in-out;
-  background-position:center; background-size:cover;
+  background-position:center; background-size:contain;  /* SHOW FULL IMAGE */
+  background-repeat:no-repeat;
   filter:grayscale(18%) contrast(112%) brightness(82%);
 }
 .slide.active{opacity:1}
-.hero::after{
-  content:""; position:absolute; inset:0;
-  background:linear-gradient(180deg, rgba(11,13,16,.35), rgba(11,13,16,.75) 65%, rgba(11,13,16,.9));
-}
-.hero-caption{
-  position:absolute; left:16px; bottom:12px; right:16px; z-index:2;
-  color:var(--muted); font-size:.95rem;
-}
 
 /* ====== Headings ====== */
 h1,h2,h3{margin:0 0 .4rem}
@@ -80,6 +80,8 @@ h1{font-size:clamp(28px,4.8vw,42px)}
 h2{font-size:clamp(20px,3.2vw,26px)}
 h3{font-size:clamp(16px,2.6vw,20px)}
 p{margin:.5rem 0}
+.muted{color:var(--muted)}
+.hr{border:none; border-top:1px solid var(--stroke); margin:12px 0}
 
 /* ====== Custom Wavesurfer players ====== */
 .ws-section{margin-top:18px}
@@ -102,30 +104,35 @@ p{margin:.5rem 0}
 .theme-meri  .ws-progress{background:var(--c-meri)}
 .theme-mimmi .ws-progress{background:var(--c-mimmi)}
 
-/* Section frames */
-.frame{padding:16px; border-radius:12px; border:1px solid var(--stroke); background:rgba(255,255,255,.02)}
+/* Section frames (keep the nice subtle inner ring) */
 .theme-selli{box-shadow:inset 0 0 0 3px color-mix(in oklab, var(--c-selli) 22%, transparent)}
 .theme-meri{box-shadow:inset 0 0 0 3px color-mix(in oklab, var(--c-meri) 22%, transparent)}
 .theme-mimmi{box-shadow:inset 0 0 0 3px color-mix(in oklab, var(--c-mimmi) 28%, transparent)}
 
-/* Small helper */
-.muted{color:var(--muted)}
-.hr{border:none; border-top:1px solid var(--stroke); margin:12px 0}
+/* ===== Views (only one visible at a time) ===== */
+.view{display:none}
+.view.active{display:block}
+
+/* ===== Category themes (bg + glass tint) ===== */
+body.theme-bio      { --bg:#0b0d10; --panel-tint: rgba(255,255,255,.03); }
+body.theme-soolo    { --bg:#0f141f; --panel-tint: rgba(64,140,255,.06); }
+body.theme-teatteri { --bg:#171114; --panel-tint: rgba(255,68,68,.05); }
+body.theme-elek     { --bg:#141025; --panel-tint: rgba(160,120,255,.06); }
+body.theme-yhteys   { --bg:#0e1616; --panel-tint: rgba(64,224,208,.06); }
 </style>
 </head>
-<body>
+<body class="theme-bio">
 
 <div class="wrap">
-  <!-- ===== Sidebar: category columns ===== -->
+  <!-- ===== Sidebar: new categories (no "Osastot" label) ===== -->
   <aside class="sidebar">
     <div class="side-card">
-      <h3>Osastot</h3>
       <div class="side-grid">
-        <a class="cat selli" href="#selli">Selli</a>
-        <a class="cat merituulet" href="#merituulet">Merituulet</a>
-        <a class="cat mimmi" href="#mimmi">Mimmilehmän ja Variksen kesäpäivä laitumella</a>
-        <a class="cat" href="#bio">Bio</a>
-        <a class="cat" href="#yhteys">Yhteys</a>
+        <a class="cat active" data-target="view-bio"      data-theme="theme-bio"      href="#">Bio</a>
+        <a class="cat"        data-target="view-soolo"    data-theme="theme-soolo"    href="#">Soolotuotanto</a>
+        <a class="cat"        data-target="view-teatteri" data-theme="theme-teatteri" href="#">Teatteri / Äänisuunnittelu</a>
+        <a class="cat"        data-target="view-elek"     data-theme="theme-elek"     href="#">Elektroninen / Kokeellinen</a>
+        <a class="cat"        data-target="view-yhteys"   data-theme="theme-yhteys"   href="#">Yhteystiedot</a>
       </div>
     </div>
   </aside>
@@ -133,52 +140,75 @@ p{margin:.5rem 0}
   <!-- ===== Main content ===== -->
   <main>
 
-    <!-- Hero slideshow ABOVE bio -->
+    <!-- Slideshow ALWAYS on top -->
     <section class="section">
       <div class="hero" aria-label="Kuva-slideshow">
         <div class="slide active" style="background-image:url('images/Kuva 1.jpeg')"></div>
         <div class="slide" style="background-image:url('images/Kuva 2.jpeg')"></div>
         <div class="slide" style="background-image:url('images/Kuva 3.jpeg')"></div>
-        <div class="hero-caption">Kuvia / Niko Aaltonen — taustalla lasinen tummasävy</div>
       </div>
     </section>
 
-    <!-- BIO FIRST -->
-    <section id="bio" class="section panel">
-      <h1>Niko Aaltonen</h1>
-      <p class="muted">Säveltäjä • äänisuunnittelija • monialainen taiteilija</p>
-      <hr class="hr">
-      <p>Niko Aaltonen on säveltäjä, äänisuunnittelija ja monialainen taiteilija Turusta. Hänen taustansa musiikkituotannon ja teatterin parissa näkyy työssä, jossa yhdistyvät tunnelmalliset äänimaisemat ja vahva emotionaalinen syvyys. Niko luo musiikkia ja äänisuunnittelua, jotka kertovat tarinoita, herättävät muistoja ja tukevat esitysten visuaalista ja dramaturgista kokonaisuutta. Hänen äänimaailmansa liikkuvat klassisen musiikin, pop/rockin ja elektronisen kokeellisuuden välillä – rajoja pelottomasti rikkoen.</p>
+    <!-- ===== Views (one at a time) ===== -->
+    <!-- BIO (default) -->
+    <section id="view-bio" class="view active">
+      <div class="panel">
+        <h1>Niko Aaltonen</h1>
+        <p class="muted">Säveltäjä • äänisuunnittelija • monialainen taiteilija</p>
+        <hr class="hr">
+        <p>Niko Aaltonen on säveltäjä, äänisuunnittelija ja monialainen taiteilija Turusta. Hänen taustansa musiikkituotannon ja teatterin parissa näkyy työssä, jossa yhdistyvät tunnelmalliset äänimaisemat ja vahva emotionaalinen syvyys. Niko luo musiikkia ja äänisuunnittelua, jotka kertovat tarinoita, herättävät muistoja ja tukevat esitysten visuaalista ja dramaturgista kokonaisuutta. Hänen äänimaailmansa liikkuvat klassisen musiikin, pop/rockin ja elektronisen kokeellisuuden välillä – rajoja pelottomasti rikkoen.</p>
+      </div>
     </section>
 
-    <!-- Selli -->
-    <section id="selli" class="section frame theme-selli ws-section">
-      <h2>Musiikkia näytelmästä “Selli”</h2>
-      <div class="ws-track" data-src="audio/selli_2naytos6kohtaus.mp3" data-title="Teeman huipennus"></div>
-      <div class="ws-track" data-src="audio/selli_4naytos1kohtaus.mp3" data-title="Järkensä menettänyt"></div>
+    <!-- SOOLO (placeholder) -->
+    <section id="view-soolo" class="view">
+      <div class="panel">
+        <h2>Soolotuotanto</h2>
+        <p class="muted">Sisältö tulossa — lisätään teoksia, kun olet valmis. Voimme käyttää samaa soitinsoitinta / waveformeja tännekin.</p>
+      </div>
     </section>
 
-    <!-- Merituulet -->
-    <section id="merituulet" class="section frame theme-meri ws-section">
-      <h2>Merituulet</h2>
-      <p class="muted">Toivonsa kätkenyt – Rohkea ja tulinen</p>
-      <div class="ws-track" data-src="audio/Merituulet.mp3" data-title="Merituulet"></div>
+    <!-- TEATTERI / ÄÄNISUUNNITTELU -->
+    <section id="view-teatteri" class="view">
+      <!-- Selli -->
+      <div class="section frame theme-selli ws-section">
+        <h2>Musiikkia näytelmästä “Selli”</h2>
+        <div class="ws-track" data-src="audio/selli_2naytos6kohtaus.mp3" data-title="Teeman huipennus"></div>
+        <div class="ws-track" data-src="audio/selli_4naytos1kohtaus.mp3" data-title="Järkensä menettänyt"></div>
+      </div>
+
+      <!-- Merituulet -->
+      <div class="section frame theme-meri ws-section">
+        <h2>Merituulet</h2>
+        <p class="muted">Toivonsa kätkenyt – Rohkea ja tulinen</p>
+        <div class="ws-track" data-src="audio/Merituulet.mp3" data-title="Merituulet"></div>
+      </div>
+
+      <!-- Mimmi -->
+      <div class="section frame theme-mimmi ws-section">
+        <h2>Musiikkia näytelmästä “Mimmilehmän ja Variksen kesäpäivä laitumella”</h2>
+        <div class="ws-track" data-src="audio/Intromusa.mp3" data-title="Intromusa"></div>
+        <div class="ws-track" data-src="audio/Jännitys ja Skrätsi.mp3" data-title="Jännitys ja Skrätsi"></div>
+        <div class="ws-track" data-src="audio/Varis odottaa.mp3" data-title="Varis odottaa"></div>
+        <div class="ws-track" data-src="audio/39. Toka tanssi.mp3" data-title="Toka tanssi"></div>
+        <div class="ws-track" data-src="audio/Viimeinen tanssi.mp3" data-title="Viimeinen tanssi"></div>
+      </div>
     </section>
 
-    <!-- Mimmi -->
-    <section id="mimmi" class="section frame theme-mimmi ws-section">
-      <h2>Musiikkia näytelmästä “Mimmilehmän ja Variksen kesäpäivä laitumella”</h2>
-      <div class="ws-track" data-src="audio/Intromusa.mp3" data-title="Intromusa"></div>
-      <div class="ws-track" data-src="audio/Jännitys ja Skrätsi.mp3" data-title="Jännitys ja Skrätsi"></div>
-      <div class="ws-track" data-src="audio/Varis odottaa.mp3" data-title="Varis odottaa"></div>
-      <div class="ws-track" data-src="audio/39. Toka tanssi.mp3" data-title="Toka tanssi"></div>
-      <div class="ws-track" data-src="audio/Viimeinen tanssi.mp3" data-title="Viimeinen tanssi"></div>
+    <!-- ELEKTRONINEN (placeholder) -->
+    <section id="view-elek" class="view">
+      <div class="panel">
+        <h2>Elektroninen / Kokeellinen</h2>
+        <p class="muted">Sisältö tulossa — kun lisäät teoksia, teen tänne oman soittolistan ja teeman.</p>
+      </div>
     </section>
 
-    <!-- Yhteys -->
-    <section id="yhteys" class="section panel">
-      <h2>Yhteys</h2>
-      <p><a href="mailto:sinun.sahkoposti@esimerkki.com" style="color:var(--ink)">sinun.sahkoposti@esimerkki.com</a></p>
+    <!-- YHTEYSTIEDOT (placeholder) -->
+    <section id="view-yhteys" class="view">
+      <div class="panel">
+        <h2>Yhteystiedot</h2>
+        <p><a href="mailto:sinun.sahkoposti@esimerkki.com" style="color:var(--ink)">sinun.sahkoposti@esimerkki.com</a></p>
+      </div>
     </section>
 
   </main>
@@ -192,58 +222,88 @@ const slides = document.querySelectorAll('.slide');
 let i = 0;
 setInterval(()=>{ slides[i].classList.remove('active'); i=(i+1)%slides.length; slides[i].classList.add('active'); },7000);
 
+/* ===== View switching + themed background & glass ===== */
+const links = document.querySelectorAll('.cat');
+links.forEach(a=>{
+  a.addEventListener('click', (e)=>{
+    e.preventDefault();
+    // active link
+    document.querySelector('.cat.active')?.classList.remove('active');
+    a.classList.add('active');
+    // theme on body (drives bg + panel tint)
+    const theme = a.dataset.theme;
+    document.body.className = theme;
+    // swap view
+    const targetId = a.dataset.target;
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById(targetId).classList.add('active');
+
+    // (Re)build players if entering theatre view for first time
+    if (targetId === 'view-teatteri' && !window._wsInit) {
+      buildPlayers();
+      window._wsInit = true;
+    }
+  });
+});
+
 /* ===== Player builder ===== */
-const fmt = s => !isFinite(s) ? '–:–' : `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+function fmt(s){ return !isFinite(s) ? '–:–' : `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`; }
 let currentWS = null;
 
-document.querySelectorAll('.ws-track').forEach(el=>{
-  const url = encodeURI(el.dataset.src);
-  const title = el.dataset.title || 'Audio';
-  el.innerHTML = `
-    <div class="ws-card">
-      <div class="ws-title">${title}</div>
-      <div class="ws-row">
-        <button class="ws-play" aria-label="Play/Pause">▶</button>
-        <div class="ws-canvas">
-          <div class="ws-wave"></div>
-          <div class="ws-progress"></div>
+function buildPlayers(){
+  document.querySelectorAll('#view-teatteri .ws-track').forEach(el=>{
+    const url = encodeURI(el.dataset.src);
+    const title = el.dataset.title || 'Audio';
+    el.innerHTML = `
+      <div class="ws-card">
+        <div class="ws-title">${title}</div>
+        <div class="ws-row">
+          <button class="ws-play" aria-label="Play/Pause">▶</button>
+          <div class="ws-canvas">
+            <div class="ws-wave"></div>
+            <div class="ws-progress"></div>
+          </div>
+          <div class="ws-time"><span class="curr">0:00</span> / <span class="dur">–:–</span></div>
         </div>
-        <div class="ws-time"><span class="curr">0:00</span> / <span class="dur">–:–</span></div>
-      </div>
-    </div>`;
-  const btn = el.querySelector('.ws-play');
-  const waveEl = el.querySelector('.ws-wave');
-  const curr = el.querySelector('.curr');
-  const dur  = el.querySelector('.dur');
-  const bar  = el.querySelector('.ws-progress');
+      </div>`;
+    const btn = el.querySelector('.ws-play');
+    const waveEl = el.querySelector('.ws-wave');
+    const curr = el.querySelector('.curr');
+    const dur  = el.querySelector('.dur');
+    const bar  = el.querySelector('.ws-progress');
 
-  const ws = WaveSurfer.create({
-    container: waveEl,
-    height: 64,
-    waveColor: 'rgba(255,255,255,0.35)',
-    progressColor: 'rgba(255,255,255,0)',
-    cursorColor: 'rgba(255,255,255,0.6)',
-    barWidth: 2, barGap: 2, barRadius: 2,
-    normalize: true, url, responsive: true,
+    const ws = WaveSurfer.create({
+      container: waveEl,
+      height: 64,
+      waveColor: 'rgba(255,255,255,0.35)',
+      progressColor: 'rgba(255,255,255,0)',
+      cursorColor: 'rgba(255,255,255,0.6)',
+      barWidth: 2, barGap: 2, barRadius: 2,
+      normalize: true, url, responsive: true,
+    });
+
+    ws.on('ready', ()=> dur.textContent = fmt(ws.getDuration()));
+    ws.on('timeupdate', t=>{
+      curr.textContent = fmt(t);
+      const pct = ws.getDuration()? (t/ws.getDuration())*100 : 0;
+      bar.style.width = pct+'%';
+    });
+    ws.on('finish', ()=>{ btn.textContent='▶'; bar.style.width='0%'; });
+
+    function playPause(){
+      if(currentWS && currentWS!==ws) currentWS.pause();
+      ws.playPause();
+      currentWS = ws.isPlaying()? ws : null;
+      btn.textContent = ws.isPlaying()? '⏸' : '▶';
+    }
+    btn.addEventListener('click', playPause);
+    waveEl.addEventListener('click', ()=>{ if(!ws.isPlaying()) playPause(); });
   });
+}
 
-  ws.on('ready', ()=> dur.textContent = fmt(ws.getDuration()));
-  ws.on('timeupdate', t=>{
-    curr.textContent = fmt(t);
-    const pct = ws.getDuration()? (t/ws.getDuration())*100 : 0;
-    bar.style.width = pct+'%';
-  });
-  ws.on('finish', ()=>{ btn.textContent='▶'; bar.style.width='0%'; });
-
-  function playPause(){
-    if(currentWS && currentWS!==ws) currentWS.pause();
-    ws.playPause();
-    currentWS = ws.isPlaying()? ws : null;
-    btn.textContent = ws.isPlaying()? '⏸' : '▶';
-  }
-  btn.addEventListener('click', playPause);
-  waveEl.addEventListener('click', ()=>{ if(!ws.isPlaying()) playPause(); });
-});
+// If you want players ready on first load, uncomment next two lines:
+// buildPlayers();
+// window._wsInit = true;
 </script>
 </body>
 </html>
