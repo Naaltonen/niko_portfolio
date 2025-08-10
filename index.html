@@ -5,89 +5,144 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Niko Aaltonen — Portfolio</title>
 <style>
-:root {
+:root{
   --ink:#e9ebef;
   --muted:#a9adb6;
-  --stroke:rgba(255,255,255,.08);
-  --panel:rgba(20,20,24,.55);
-  --c-bio:rgba(80,80,100,0.45);
-  --c-soolo:rgba(120,90,150,0.45);
-  --c-teatteri:rgba(120,40,40,0.45);
-  --c-elektr:rgba(40,90,120,0.45);
-  --c-yhteys:rgba(40,100,60,0.45);
+  --stroke:rgba(255,255,255,.10);
+  /* defaults (Bio) */
+  --bg: linear-gradient(135deg, #0e131a, #1a2230 60%, #0e131a);
+  --panel-tint: rgba(24,28,36,.26);
+  --accent: #7aa2ff;
 }
-*{box-sizing:border-box}
-body {
-  margin:0;
-  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  color:var(--ink);
-  background:#0b0d10;
-  transition:background 1s ease;
-}
-.wrap {
-  display:grid;
-  grid-template-columns:260px 1fr;
-  gap:20px;
-  max-width:1200px;
-  margin:0 auto;
-  padding:20px;
-}
-@media (max-width:900px){ .wrap{grid-template-columns:1fr;} }
 
-.sidebar {
-  position:sticky; top:16px; align-self:start;
-  display:grid; gap:10px;
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  color:var(--ink);
+  background:var(--bg);
+  background-size: 300% 300%;
+  transition: background 1.2s ease;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  line-height:1.55;
 }
-.cat {
-  display:block; padding:12px 14px;
+
+.wrap{
+  display:grid; grid-template-columns:260px 1fr; gap:20px;
+  max-width:1200px; margin:0 auto; padding:20px;
+}
+@media (max-width:900px){ .wrap{grid-template-columns:1fr; padding:12px}}
+
+/* Sidebar */
+.sidebar{ position:sticky; top:16px; align-self:start; display:grid; gap:10px; }
+.cat{
+  display:block; padding:12px 14px; border-radius:12px; text-decoration:none; color:var(--ink);
+  background:rgba(255,255,255,.05); border:1px solid var(--stroke); font-weight:600;
+  transition:.22s transform,.22s background,.22s border-color;
+}
+.cat:hover{ transform:translateY(-2px); background:rgba(255,255,255,.10); border-color:rgba(255,255,255,.18) }
+
+/* Glass panels (deeper & more transparent) */
+.panel{
+  background: linear-gradient(0deg, var(--panel-tint), var(--panel-tint));
+  border:1px solid var(--stroke);
+  border-radius:14px; padding:18px;
+  backdrop-filter: blur(12px) saturate(110%);
+  box-shadow: 0 10px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.03);
+  transition: background .9s ease, border-color .9s ease, box-shadow .9s ease;
+}
+
+.section{ margin-top:20px }
+
+/* Slideshow – images fully visible */
+.hero{
+  border-radius:14px; overflow:hidden; position:relative; height:min(48vh,520px);
+  background: transparent; border:1px solid var(--stroke);
+  box-shadow: 0 10px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.05);
+  transition: border-color 1.2s ease, box-shadow 1.2s ease;
+}
+.hero img{
+  position:absolute; inset:0; width:100%; height:100%; object-fit:contain;
+  opacity:0; transition:opacity 1s ease-in-out;
+  /* let the page gradient show around the image, no black bars */
+  background: transparent;
+}
+.hero img.active{ opacity:1 }
+.hero::after{
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(180deg, rgba(10,12,16,.28), rgba(10,12,16,.65) 65%, rgba(10,12,16,.85));
+}
+
+/* Type */
+h1,h2,h3{margin:0 0 .5rem}
+h1{font-size:clamp(28px,4.8vw,42px)}
+h2{font-size:clamp(20px,3.2vw,26px)}
+p{margin:.5rem 0}
+.muted{color:var(--muted)}
+hr{border:none; border-top:1px solid var(--stroke); margin:12px 0}
+
+/* ===== Custom, bolder audio players (stand-out) ===== */
+.ws-list{ display:grid; gap:14px; margin-top:10px; }
+.ws-card{
   border-radius:12px;
-  text-decoration:none; color:var(--ink);
-  background:rgba(255,255,255,.04);
-  border:1px solid var(--stroke);
-  font-weight:600;
-  transition:.2s;
+  padding:14px;
+  background: rgba(0,0,0,.22);
+  border:1px solid color-mix(in oklab, var(--accent) 35%, transparent);
+  box-shadow: inset 0 0 0 2px color-mix(in oklab, var(--accent) 18%, transparent),
+              0 10px 26px rgba(0,0,0,.35);
 }
-.cat:hover {
-  background:rgba(255,255,255,.08);
-  transform:translateY(-2px);
+.ws-row{ display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:center }
+.ws-title{ font-weight:700; letter-spacing:.2px }
+.ws-play{
+  width:46px; height:46px; border-radius:10px; cursor:pointer; font-size:18px;
+  background: color-mix(in oklab, var(--accent) 25%, rgba(255,255,255,.08));
+  border:1px solid color-mix(in oklab, var(--accent) 55%, rgba(255,255,255,.18));
+  color:var(--ink);
+  box-shadow: 0 6px 16px color-mix(in oklab, var(--accent) 25%, transparent);
+  transition:.15s transform,.15s filter;
 }
-.hero {
-  border-radius:14px;
-  overflow:hidden;
-  position:relative;
-  height:min(48vh,520px);
-  background:#111;
-  border:1px solid var(--stroke);
+.ws-play:hover{ transform:translateY(-1px); filter:brightness(1.08) }
+.ws-wave{ height:72px }
+.ws-time{ font-variant-numeric:tabular-nums; opacity:.9 }
+
+/* Wavesurfer progress overlay */
+.ws-canvas{ position:relative }
+.ws-progress{
+  position:absolute; inset:0; pointer-events:none;
+  background: color-mix(in oklab, var(--accent) 55%, transparent);
+  opacity:.85; mix-blend-mode:screen; width:0%;
+  transition: width .05s linear;
 }
-.hero img {
-  position:absolute;
-  width:100%;
-  height:100%;
-  object-fit:contain;
-  opacity:0;
-  transition:opacity 1s ease-in-out;
-  background:#0b0d10;
+
+/* ===== Category Themes (deeper, darker, subtle) ===== */
+body.theme-bio {
+  --bg: linear-gradient(135deg, #0e131a, #1a2230 60%, #0e131a);
+  --panel-tint: rgba(24,28,36,.26);
+  --accent:#7aa2ff;
 }
-.hero img.active { opacity:1; }
-.hero::after {
-  content:"";
-  position:absolute; inset:0;
-  background:linear-gradient(180deg, rgba(11,13,16,.35), rgba(11,13,16,.75) 65%, rgba(11,13,16,.9));
+body.theme-soolo {
+  --bg: linear-gradient(135deg, #0f1220, #1b2a4a 60%, #0f1220);
+  --panel-tint: rgba(22,28,50,.28);
+  --accent:#5b86e5;
 }
-.panel {
-  background:var(--panel);
-  border:1px solid var(--stroke);
-  border-radius:14px;
-  padding:18px;
-  backdrop-filter: blur(8px);
-  transition:background 1s ease;
+body.theme-teatteri {
+  --bg: linear-gradient(135deg, #150a0c, #2a0e16 60%, #150a0c);
+  --panel-tint: rgba(35,12,18,.34);
+  --accent:#ff4c6a; /* theatre accent for players */
 }
-h1,h2,h3{margin:0 0 .5rem;}
-p{margin:.5rem 0;}
-.center { text-align:center; font-size:1.2rem; opacity:0.85; padding:40px 0; }
+body.theme-elektr {
+  --bg: linear-gradient(135deg, #0d0a18, #171233 60%, #0d0a18);
+  --panel-tint: rgba(22,16,50,.30);
+  --accent:#b08cff;
+}
+body.theme-yhteys {
+  --bg: linear-gradient(135deg, #0a1414, #102222 60%, #0a1414);
+  --panel-tint: rgba(12,32,32,.28);
+  --accent:#6fe0cf;
+}
 </style>
 </head>
-<body>
+<body class="theme-bio">
 
 <div class="wrap">
   <!-- Sidebar -->
@@ -101,115 +156,142 @@ p{margin:.5rem 0;}
 
   <!-- Main -->
   <main>
-    <!-- Slideshow -->
+    <!-- Slideshow (same everywhere, images fully visible) -->
     <div class="hero">
       <img src="images/Kuva 1.jpeg" class="active" alt="">
       <img src="images/Kuva 2.jpeg" alt="">
       <img src="images/Kuva 3.jpeg" alt="">
     </div>
 
-    <!-- Content -->
-    <div id="content" class="panel" style="margin-top:20px;"></div>
+    <!-- Swappable content -->
+    <div id="content" class="panel section"></div>
   </main>
 </div>
 
+<!-- Wavesurfer -->
 <script src="https://unpkg.com/wavesurfer.js@7"></script>
 <script>
 /* Slideshow */
-const slides=document.querySelectorAll('.hero img');
-let si=0;
-setInterval(()=>{
-  slides[si].classList.remove('active');
-  si=(si+1)%slides.length;
-  slides[si].classList.add('active');
-},7000);
+const slides = document.querySelectorAll('.hero img');
+let s = 0;
+setInterval(() => {
+  slides[s].classList.remove('active');
+  s = (s + 1) % slides.length;
+  slides[s].classList.add('active');
+}, 7000);
 
-/* Content per category */
-const content=document.getElementById('content');
-const body=document.body;
+/* Content blocks */
+const content = document.getElementById('content');
+const blocks = {
+  bio: `
+    <h1>Niko Aaltonen</h1>
+    <p class="muted">Säveltäjä • äänisuunnittelija • monialainen taiteilija</p>
+    <hr>
+    <p>Niko Aaltonen on säveltäjä, äänisuunnittelija ja monialainen taiteilija Turusta. Hänen taustansa musiikkituotannon ja teatterin parissa näkyy työssä, jossa yhdistyvät tunnelmalliset äänimaisemat ja vahva emotionaalinen syvyys. Niko luo musiikkia ja äänisuunnittelua, jotka kertovat tarinoita, herättävät muistoja ja tukevat esitysten visuaalista ja dramaturgista kokonaisuutta. Hänen äänimaailmansa liikkuvat klassisen musiikin, pop/rockin ja elektronisen kokeellisuuden välillä – rajoja pelottomasti rikkoen.</p>
+    <p>Nikon musiikillinen polku alkoi jo nuorena, kun hän osti ensimmäisen kitaransa. Vuosien varrella hän on syventynyt intohimoisesti musiikin eri osa-alueisiin ja opiskellut laajasti useita genrejä ja soittimia, kuten bassoa, rumpuja ja laulua. Hän valmistui muusikoksi Turun konservatoriosta ja palveli tämän jälkeen Puolustusvoimien varusmiessoittokunnassa, josta hän valmistui aliupseerina. Tällä hetkellä Niko opiskelee musiikkipedagogiksi ja jatkaa monipuolista musiikin tekemistä eri muodoissa.</p>
+  `,
+  soolo: `<h2>Soolotuotanto</h2><p class="muted">Tulossa…</p>`,
+  teatteri: `
+    <h2>Musiikkia näytelmästä “Selli”</h2>
+    <div class="ws-list">
+      <div class="ws-track" data-src="audio/selli_2naytos6kohtaus.mp3" data-title="Teeman huipennus"></div>
+      <div class="ws-track" data-src="audio/selli_4naytos1kohtaus.mp3" data-title="Järkensä menettänyt"></div>
+    </div>
 
-const bioHTML=`
-<h1>Niko Aaltonen</h1>
-<p class="muted">Säveltäjä • äänisuunnittelija • monialainen taiteilija</p>
-<hr>
-<p>Niko Aaltonen on säveltäjä, äänisuunnittelija ja monialainen taiteilija Turusta. Hänen taustansa musiikkituotannon ja teatterin parissa näkyy työssä, jossa yhdistyvät tunnelmalliset äänimaisemat ja vahva emotionaalinen syvyys. Niko luo musiikkia ja äänisuunnittelua, jotka kertovat tarinoita, herättävät muistoja ja tukevat esitysten visuaalista ja dramaturgista kokonaisuutta. Hänen äänimaailmansa liikkuvat klassisen musiikin, pop/rockin ja elektronisen kokeellisuuden välillä – rajoja pelottomasti rikkoen.</p>
-<p>Nikon musiikillinen polku alkoi jo nuorena, kun hän osti ensimmäisen kitaransa. Vuosien varrella hän on syventynyt intohimoisesti musiikin eri osa-alueisiin ja opiskellut laajasti useita genrejä ja soittimia, kuten bassoa, rumpuja ja laulua. Hän valmistui muusikoksi Turun konservatoriosta ja palveli tämän jälkeen Puolustusvoimien varusmiessoittokunnassa, josta hän valmistui aliupseerina. Tällä hetkellä Niko opiskelee musiikkipedagogiksi ja jatkaa monipuolista musiikin tekemistä eri muodoissa.</p>
-`;
+    <h2 style="margin-top:22px;">Merituulet</h2>
+    <p class="muted">Toivonsa kätkenyt – Rohkea ja tulinen</p>
+    <div class="ws-list">
+      <div class="ws-track" data-src="audio/Merituulet.mp3" data-title="Merituulet"></div>
+    </div>
 
-const sooloHTML=`<div class="center">Tulossa…</div>`;
-
-const teatteriHTML=`
-<h2>Musiikkia näytelmästä “Selli”</h2>
-<div class="ws-track" data-src="audio/selli_2naytos6kohtaus.mp3" data-title="Teeman huipennus"></div>
-<div class="ws-track" data-src="audio/selli_4naytos1kohtaus.mp3" data-title="Järkensä menettänyt"></div>
-<h2 style="margin-top:20px;">Merituulet</h2>
-<p class="muted">Toivonsa kätkenyt – Rohkea ja tulinen</p>
-<div class="ws-track" data-src="audio/Merituulet.mp3" data-title="Merituulet"></div>
-<h2 style="margin-top:20px;">Musiikkia näytelmästä “Mimmilehmän ja Variksen kesäpäivä laitumella”</h2>
-<div class="ws-track" data-src="audio/Intromusa.mp3" data-title="Intromusa"></div>
-<div class="ws-track" data-src="audio/Jännitys ja Skrätsi.mp3" data-title="Jännitys ja Skrätsi"></div>
-<div class="ws-track" data-src="audio/Varis odottaa.mp3" data-title="Varis odottaa"></div>
-<div class="ws-track" data-src="audio/39. Toka tanssi.mp3" data-title="Toka tanssi"></div>
-<div class="ws-track" data-src="audio/Viimeinen tanssi.mp3" data-title="Viimeinen tanssi"></div>
-`;
-
-const elektrHTML=`<div class="center">Tulossa…</div>`;
-const yhteysHTML=`<h2>Yhteystiedot</h2><p><a href="mailto:sinun.sahkoposti@esimerkki.com" style="color:var(--ink)">sinun.sahkoposti@esimerkki.com</a></p>`;
-
-/* Category color mapping */
-const catColors={
-  bio:'var(--c-bio)',
-  soolo:'var(--c-soolo)',
-  teatteri:'var(--c-teatteri)',
-  elektr:'var(--c-elektr)',
-  yhteys:'var(--c-yhteys)'
+    <h2 style="margin-top:22px;">Musiikkia näytelmästä “Mimmilehmän ja Variksen kesäpäivä laitumella”</h2>
+    <div class="ws-list">
+      <div class="ws-track" data-src="audio/Intromusa.mp3" data-title="Intromusa"></div>
+      <div class="ws-track" data-src="audio/Jännitys ja Skrätsi.mp3" data-title="Jännitys ja Skrätsi"></div>
+      <div class="ws-track" data-src="audio/Varis odottaa.mp3" data-title="Varis odottaa"></div>
+      <div class="ws-track" data-src="audio/39. Toka tanssi.mp3" data-title="Toka tanssi"></div>
+      <div class="ws-track" data-src="audio/Viimeinen tanssi.mp3" data-title="Viimeinen tanssi"></div>
+    </div>
+  `,
+  elektr: `<h2>Elektroninen / Kokeellinen</h2><p class="muted">Tulossa…</p>`,
+  yhteys: `<h2>Yhteystiedot</h2><p><a href="mailto:sinun.sahkoposti@esimerkki.com" style="color:var(--ink)">sinun.sahkoposti@esimerkki.com</a></p>`
 };
 
-/* Load category */
-function loadCat(cat){
-  content.style.opacity=0;
-  setTimeout(()=>{
-    body.style.background=catColors[cat] || '#0b0d10';
-    content.style.background=catColors[cat] || 'var(--panel)';
-    if(cat==='bio') content.innerHTML=bioHTML;
-    else if(cat==='soolo') content.innerHTML=sooloHTML;
-    else if(cat==='teatteri') {content.innerHTML=teatteriHTML; initWaves();}
-    else if(cat==='elektr') content.innerHTML=elektrHTML;
-    else if(cat==='yhteys') content.innerHTML=yhteysHTML;
-    content.style.opacity=1;
-  },400);
+/* Theme swap (deep glass + subtle) */
+function setTheme(cat){
+  document.body.className = 'theme-' + cat;
+  content.style.opacity = 0;
+  setTimeout(()=>{ content.innerHTML = blocks[cat] || ''; content.style.opacity = 1;
+                   if(cat==='teatteri') initPlayers(); }, 220);
 }
 
-/* Init Wavesurfer players */
-function initWaves(){
-  document.querySelectorAll('.ws-track').forEach(el=>{
-    const url=el.dataset.src;
-    const title=el.dataset.title;
-    el.innerHTML=`
-      <div><strong>${title}</strong></div>
-      <div class="player"></div>
+/* Build bold, functional WaveSurfer players */
+function initPlayers(){
+  const items = document.querySelectorAll('.ws-track');
+  items.forEach(container=>{
+    const url = encodeURI(container.dataset.src);
+    const title = container.dataset.title || 'Audio';
+
+    container.innerHTML = `
+      <div class="ws-card">
+        <div class="ws-row">
+          <button class="ws-play" aria-label="Play/Pause">▶</button>
+          <div class="ws-canvas">
+            <div class="ws-wave"></div>
+            <div class="ws-progress"></div>
+          </div>
+          <div class="ws-time"><span class="curr">0:00</span> / <span class="dur">–:–</span></div>
+        </div>
+        <div class="ws-title">${title}</div>
+      </div>
     `;
-    const ws=WaveSurfer.create({
-      container:el.querySelector('.player'),
-      waveColor:'rgba(255,255,255,0.35)',
-      progressColor:'rgba(255,255,255,0.7)',
-      height:64,
-      barWidth:2, barGap:2, barRadius:2,
-      normalize:true, url
+
+    const btn = container.querySelector('.ws-play');
+    const waveEl = container.querySelector('.ws-wave');
+    const curr = container.querySelector('.curr');
+    const dur  = container.querySelector('.dur');
+    const prog = container.querySelector('.ws-progress');
+
+    const ws = WaveSurfer.create({
+      container: waveEl,
+      height: 72,
+      waveColor: 'rgba(255,255,255,0.35)',
+      progressColor: 'rgba(255,255,255,0)', /* we draw our own bar */
+      cursorColor: 'rgba(255,255,255,0.7)',
+      barWidth: 2, barGap: 2, barRadius: 2,
+      normalize: true,
+      url,
+      responsive: true,
     });
+
+    ws.on('ready', () => { dur.textContent = fmt(ws.getDuration()); });
+    ws.on('timeupdate', t => {
+      curr.textContent = fmt(t);
+      const pct = ws.getDuration() ? (t / ws.getDuration()) * 100 : 0;
+      prog.style.width = pct + '%';
+    });
+    ws.on('finish', () => { btn.textContent = '▶'; prog.style.width = '0%'; });
+
+    btn.addEventListener('click', () => {
+      ws.playPause();
+      btn.textContent = ws.isPlaying() ? '⏸' : '▶';
+    });
+    waveEl.addEventListener('click', () => { if (!ws.isPlaying()) { ws.play(); btn.textContent = '⏸'; } });
   });
 }
 
-/* Sidebar click */
-document.querySelectorAll('.cat').forEach(btn=>{
-  btn.addEventListener('click',e=>{
+function fmt(s){ if(!isFinite(s)) return '–:–'; const m=Math.floor(s/60), sec=Math.floor(s%60); return `${m}:${String(sec).padStart(2,'0')}`; }
+
+/* Sidebar links */
+document.querySelectorAll('.cat').forEach(a=>{
+  a.addEventListener('click', e=>{
     e.preventDefault();
-    loadCat(btn.dataset.cat);
+    setTheme(a.dataset.cat);
   });
 });
 
-/* Default load */
-loadCat('bio');
+/* Default view */
+setTheme('bio');
 </script>
 </body>
 </html>
