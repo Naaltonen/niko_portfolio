@@ -5,7 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Niko Aaltonen — Portfolio</title>
 <style>
-:root{ --ink:#e9ebef; --muted:#a9adb6; --stroke:rgba(255,255,255,.08); --panel:rgba(20,20,24,.5); }
+:root{
+  --ink:#e9ebef; --muted:#a9adb6; --stroke:rgba(255,255,255,.08); --panel:rgba(20,20,24,.5);
+  --wave-base: rgba(255,255,255,.35); /* unplayed waveform color */
+}
 
 /* Background gradients */
 .bg-bio  { background: radial-gradient(1200px 600px at 10% 10%,  #0f172a 0%, #0b1220 55%, #070b12 100%); }
@@ -62,6 +65,9 @@ html,body{ margin:0; height:100%; font-family:Inter,system-ui,sans-serif; color:
 .ws-time{ font-variant-numeric:tabular-nums; opacity:.9; }
 .ws-error{ font-size:.9rem; opacity:.9; color:#ffd1d1; display:none; }
 
+/* accent glow on active */
+.ws-card.playing .ws-wave{ filter: drop-shadow(0 0 8px var(--accent)); }
+
 /* Embeds */
 .soolo-grid{ display:grid; gap:16px; }
 .soolo-card .soolo-embeds{ display:grid; gap:12px; }
@@ -69,7 +75,8 @@ html,body{ margin:0; height:100%; font-family:Inter,system-ui,sans-serif; color:
 .embed{ width:100%; border-radius:12px; overflow:hidden; border:1px solid var(--stroke); background:rgba(255,255,255,.04); }
 .embed-16x9{ position:relative; padding-top:56.25%; }
 .embed-16x9 iframe{ position:absolute; inset:0; width:100%; height:100%; }
-.embed-spotify iframe{ width:100%; height:152px; } /* compact Spotify */
+/* compact Spotify */
+.embed-spotify iframe{ width:100%; height:152px; }
 </style>
 </head>
 <body class="bg-soolo theme-soolo"><!-- swapped colors: Bio <-> Soolo -->
@@ -177,24 +184,28 @@ document.addEventListener('DOMContentLoaded', () => {
   function pauseOthers(except){ wsInstances.forEach(w => { if (w !== except && w.isPlaying()) w.pause(); }); }
   function destroyPlayers(){ wsInstances.forEach(w=>{ try{w.destroy()}catch(e){} }); wsInstances=[]; }
 
-  /* Build players: resolve URL first so waveform is ready; single-click play; pause others */
+  /* Build players: resolve URL first so waveform is ready; single-click play; pause others
+     + progress color uses section accent; base uses --wave-base */
   async function wirePlayers(scope=document){
     const cards = scope.querySelectorAll('.ws-card');
     for (const card of cards){
       const wave=card.querySelector('.ws-wave');
       const btn=card.querySelector('.ws-play');
       const time=card.querySelector('.ws-time');
-      const desiredFile=card.dataset.file;   // original filename as given below
+      const desiredFile=card.dataset.file;
       const folder=card.dataset.folder;
 
-      // find a working URL (handles Taiteilija/taitelija and folder case)
       const url = await resolveAudioUrl(folder, desiredFile);
       if (!url){ showErr(card, 'Tiedostoa ei löytynyt', desiredFile); continue; }
 
+      const styles = getComputedStyle(document.body);
+      const waveBase = styles.getPropertyValue('--wave-base').trim() || 'rgba(255,255,255,0.35)';
+      const accent   = styles.getPropertyValue('--accent').trim()     || '#ffffff';
+
       const ws = WaveSurfer.create({
         container: wave,
-        waveColor:'rgba(255,255,255,0.4)',
-        progressColor:'rgba(255,255,255,0.85)',
+        waveColor: waveBase,      // unplayed part
+        progressColor: accent,    // played part (contrasts per section)
         height:64, barWidth:2, barRadius:2, responsive:true,
         url
       });
@@ -204,8 +215,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const onTick = (t)=>{ time.textContent = `${fmtTime(t)} / ${fmtTime(ws.getDuration())}`; };
       ws.on('timeupdate', onTick);
       ws.on('audioprocess', onTick);
-      ws.on('pause', ()=>{ btn.textContent='▶'; });
-      ws.on('play',  ()=>{ btn.textContent='⏸'; pauseOthers(ws); });
+      ws.on('play',  ()=>{ btn.textContent='⏸'; pauseOthers(ws); card.classList.add('playing'); });
+      ws.on('pause', ()=>{ btn.textContent='▶'; card.classList.remove('playing'); });
       ws.on('error', ()=>{ showErr(card, 'Soitin ei voinut avata tiedostoa.', url); });
 
       btn.addEventListener('click', ()=>{ ws.playPause(); });
