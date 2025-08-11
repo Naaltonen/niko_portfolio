@@ -197,4 +197,117 @@ const content = {
             <iframe src="https://open.spotify.com/embed/track/4xiEQA4enJbKFnzzgcbjqj" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"></iframe>
           </div>
           <div class="embed embed-16x9">
-            <iframe sr
+            <iframe src="https://www.youtube.com/embed/Juo7VjB8-1w" frameborder="0" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="panel">
+      <h3>Äänitteet</h3>
+      ${audioCard("Halusin Kertoo.mp3", "Halusin Kertoo", "soolotuotanto")}
+      ${audioCard("Taitelija.mp3", "Taitelija", "soolotuotanto")}
+    </section>
+  `,
+  teatteri: `
+    <section class="panel"><h2>Selli</h2>
+      ${audioCard("selli_2naytos6kohtaus.mp3", "Teeman huipennus", "teatteri_äänisuunnittelu")}
+      ${audioCard("selli_4naytos1kohtaus.mp3", "Järkensä menettänyt", "teatteri_äänisuunnittelu")}
+    </section>
+    <section class="panel"><h2>Mimmilehmän ja Variksen kesäpäivä laitumella</h2>
+      ${audioCard("Intromusa.mp3", "Intromusa", "teatteri_äänisuunnittelu")}
+      ${audioCard("Jännitys ja Skrätsi.mp3", "Jännitys ja Skrätsi", "teatteri_äänisuunnittelu")}
+      ${audioCard("Varis odottaa.mp3", "Varis odottaa", "teatteri_äänisuunnittelu")}
+      ${audioCard("39. Toka tanssi.mp3", "Toka tanssi", "teatteri_äänisuunnittelu")}
+      ${audioCard("Viimeinen tanssi.mp3", "Viimeinen tanssi", "teatteri_äänisuunnittelu")}
+    </section>
+    <section class="panel"><h2>Merituulet</h2>
+      ${audioCard("Merituulet.mp3", "Merituulet", "teatteri_äänisuunnittelu")}
+    </section>
+  `,
+  elektroninen: `
+    <section class="panel"><h2>Elektroninen / Kokeellinen</h2>
+      ${audioCard("1. Elämä on työ.mp3", "Elämä on työ", "elektroninen")}
+      ${audioCard("2. Isompikubeatles.mp3", "Isompikubeatles", "elektroninen")}
+      ${audioCard("3. Laskut.mp3", "Laskut", "elektroninen")}
+      ${audioCard("4. Oot Ruma.mp3", "Oot Ruma", "elektroninen")}
+      ${audioCard("5. Salaisestiseksikäs_instr.mp3", "Salaisestiseksikäs (instr.)", "elektroninen")}
+      ${audioCard("6. Dundun.mp3", "Dundun", "elektroninen")}
+    </section>
+  `,
+  yhteys: `
+    <section class="panel">
+      <h2>Palvelut / Yhteystiedot</h2>
+      <h3>Sävellys</h3>
+      <p>Teen sävellyksiä klassisesta musiikista teatteri- ja elokuvamusiikkiin sekä kokonaisiin ääniraitoihin — mihin tahansa projektiin, jonka haluat herättää eloon.</p>
+      <h3>Laulunkirjoitus</h3>
+      <p>Kirjoitan kappaleita popista, rockista ja metallista aina sooloartistien biitteihin asti. Älä epäröi pyytää myös muiden tyylilajien teoksia.</p>
+      <h3>Miksaus</h3>
+      <p>Miksaan kappaleesi tuoden siihen selkeyttä, syvyyttä ja viimeistellyn soinnin.</p>
+      <h3>Kitara-, basso- ja huilutunnit</h3>
+      <p>35€/h. Voimme luoda pitkäaikaisemman suunnitelman taitojesi kehittämiseksi tai keskittyä yksittäisiin ongelmiin, joissa koet olevasi jumissa.</p>
+      <h3>Sävellys- ja laulunkirjoitusopetus</h3>
+      <p>Mahdollista pyynnöstä!</p>
+      <h3>Yhteystiedot</h3>
+      <p>Puhelin: 045 110 7090 <em>(soitto, tekstiviesti, WhatsApp)</em><br>
+         Sähköposti: aaltonenniko989@gmail.com</p>
+    </section>
+  `
+};
+
+// Category colors
+const bgColors = {
+  bio: "#111",
+  soolotuotanto: "#222",
+  teatteri: "linear-gradient(180deg, var(--c-selli), var(--c-mimmi), var(--c-meri))",
+  elektroninen: "#222",
+  yhteys: "#111"
+};
+
+function loadContent(cat) {
+  document.getElementById('content-area').innerHTML = content[cat];
+  document.body.style.background = bgColors[cat];
+  initPlayers();
+}
+
+document.querySelectorAll('.cat').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    loadContent(link.dataset.cat);
+  });
+});
+
+// Wavesurfer init
+function initPlayers() {
+  document.querySelectorAll('.ws-card').forEach(card => {
+    const url = card.dataset.audio;
+    const title = card.dataset.title;
+    card.innerHTML = `
+      <div><strong>${title}</strong></div>
+      <div class="ws-row">
+        <button class="ws-play">▶</button>
+        <div class="ws-wave"></div>
+      </div>
+    `;
+    const ws = WaveSurfer.create({
+      container: card.querySelector('.ws-wave'),
+      waveColor: 'rgba(255,255,255,0.4)',
+      progressColor: 'rgba(255,255,255,0.8)',
+      height: 64,
+      barWidth: 2,
+      barRadius: 2,
+      responsive: true,
+      url: url
+    });
+    const btn = card.querySelector('.ws-play');
+    btn.addEventListener('click', () => {
+      ws.playPause();
+      btn.textContent = ws.isPlaying() ? '⏸' : '▶';
+    });
+  });
+}
+
+// Load default view
+loadContent('bio');
+</script>
+</body>
+</html>
