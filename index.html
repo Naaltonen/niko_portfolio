@@ -7,19 +7,20 @@
 <style>
 :root{ --ink:#e9ebef; --muted:#a9adb6; --stroke:rgba(255,255,255,.08); --panel:rgba(20,20,24,.5); }
 
-/* vivid but tasteful gradients per section */
+/* gradients */
 .bg-bio  { background: radial-gradient(1200px 600px at 10% 10%,  #0f172a 0%, #0b1220 55%, #070b12 100%); }
 .bg-soolo{ background: radial-gradient(1200px 600px at 90% 10%,  #1f1d55 0%, #2f2aa6 45%, #1b1761 100%); }
 .bg-teat { background: radial-gradient(1200px 600px at 10% 90%,  #5b0d0d 0%, #8b1e1e 40%, #2a0b0b 100%); }
 .bg-elek { background: radial-gradient(1200px 600px at 90% 90%,  #0a3b37 0%, #128277 40%, #072b29 100%); }
-.bg-ytx  { background: radial-gradient(1200px 600px at 50% 50%,  #0f172a 0%, #0b1220 50%, #070b12 100%); }
+/* inviting contact */
+.bg-ytx  { background: radial-gradient(1200px 600px at 50% 50%,  #1b2838 0%, #1a2634 40%, #121a25 100%); }
 
 /* themed text/accents */
 .theme-bio  { --ink:#E7EEF9; --accent:#9BC2FF; }
 .theme-soolo{ --ink:#EEE9FF; --accent:#B7A6FF; }
 .theme-teat { --ink:#FFE5E5; --accent:#FF9F9F; }
 .theme-elek { --ink:#D7FFF4; --accent:#7FFFE1; }
-.theme-ytx  { --ink:#E2EEFF; --accent:#9CC3FF; }
+.theme-ytx  { --ink:#FFEFD6; --accent:#FFC36E; } /* warm & inviting */
 
 *{box-sizing:border-box}
 html,body{ margin:0; height:100%; font-family:Inter,system-ui,sans-serif; color:var(--ink); transition:background .7s ease,color .3s ease; }
@@ -30,17 +31,15 @@ html,body{ margin:0; height:100%; font-family:Inter,system-ui,sans-serif; color:
 .side-grid{ display:grid; gap:10px; }
 .cat{
   display:block; padding:12px; border:1px solid var(--stroke); border-radius:8px;
-  color:var(--ink); text-decoration:none; font-weight:600; background:rgba(255,255,255,.05); transition:.2s;
+  color:var(--ink); text-decoration:none; font-weight:700; letter-spacing:.2px;
+  background:rgba(255,255,255,.05); transition:.2s;
 }
 .cat:hover{ background:rgba(255,255,255,.1); border-color:var(--accent); }
-.cat.active{ outline:2px solid color-mix(in oklab, var(--accent) 60%, transparent); background:rgba(255,255,255,.16); }
+.cat.active{ outline:2px solid color-mix(in oklab, var(--accent) 60%, transparent); background:rgba(255,255,255,.16); color:var(--accent); }
 
-.panel{
-  background:var(--panel); border:1px solid var(--stroke);
-  border-radius:12px; padding:18px; backdrop-filter:blur(8px); margin-bottom:20px;
-}
+.panel{ background:var(--panel); border:1px solid var(--stroke); border-radius:12px; padding:18px; backdrop-filter:blur(8px); margin-bottom:20px; }
 
-/* Hero — side-by-side collages + fade corners */
+/* Hero — side-by-side collages + gentle corner fade */
 .hero{
   --ar: 16/9; aspect-ratio: var(--ar);
   max-height: 60vh; min-height: 280px;
@@ -88,21 +87,17 @@ html,body{ margin:0; height:100%; font-family:Inter,system-ui,sans-serif; color:
   <main id="main-content">
     <!-- Hero -->
     <section class="hero" id="hero">
-      <!-- 1 + 3 together -->
       <div class="slide duo active">
         <img src="images/Kuva 1.jpeg" alt="">
         <img src="images/Kuva 3.jpeg" alt="">
       </div>
-      <!-- 2 slightly cropped larger -->
       <div class="slide">
         <img class="cover-lean" src="images/Kuva 2.jpeg" alt="">
       </div>
-      <!-- 4 + 7 together -->
       <div class="slide duo">
         <img src="images/Kuva 4.jpeg" alt="">
         <img src="images/Kuva 7.jpeg" alt="">
       </div>
-      <!-- singles -->
       <div class="slide"><img src="images/Kuva 5.jpeg" alt=""></div>
       <div class="slide"><img src="images/Kuva 6.jpeg" alt=""></div>
       <div class="slide"><img src="images/Kuva 8.jpeg" alt=""></div>
@@ -115,7 +110,7 @@ html,body{ margin:0; height:100%; font-family:Inter,system-ui,sans-serif; color:
 <script src="https://unpkg.com/wavesurfer.js@7"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  /* ===== Slideshow ===== */
+  /* Slideshow */
   const slides = document.querySelectorAll('.slide');
   let idx = 0;
   if (slides.length) {
@@ -126,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 7000);
   }
 
-  /* ===== Helpers ===== */
+  /* Helpers */
   function audioCard(file, title, folder) {
     const url = 'audio/' + encodeURIComponent(folder) + '/' + encodeURIComponent(file);
     return (
@@ -147,29 +142,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const sec = Math.floor(s%60).toString().padStart(2,'0');
     return `${m}:${sec}`;
   };
-
-  function showErr(card, msg){
+  function showErr(card, msg, url){
     const el = card.querySelector('.ws-error');
     el.style.display = '';
-    el.textContent = '⚠️ ' + msg;
+    el.textContent = '⚠️ ' + msg + (url ? ' ('+url+')' : '');
   }
-  function clearErr(card){
-    const el = card.querySelector('.ws-error');
-    el.style.display = 'none';
-    el.textContent = '';
-  }
+  function clearErr(card){ const el = card.querySelector('.ws-error'); el.style.display='none'; el.textContent=''; }
 
-  // keep a global list to pause others
   let wsInstances = [];
-  function pauseOthers(except){
-    wsInstances.forEach(w => { if (w !== except && w.isPlaying()) w.pause(); });
-  }
-  function destroyPlayers(){
-    wsInstances.forEach(w => { try{ w.destroy(); } catch(e){} });
-    wsInstances = [];
-  }
+  function pauseOthers(except){ wsInstances.forEach(w => { if (w !== except && w.isPlaying()) w.pause(); }); }
+  function destroyPlayers(){ wsInstances.forEach(w=>{ try{w.destroy()}catch(e){} }); wsInstances=[]; }
 
-  // Build players immediately (wave visible before click)
+  /* Build players immediately: waveform visible; single-click play; pause others */
   function wirePlayers(scope=document){
     scope.querySelectorAll('.ws-card').forEach(card=>{
       const wave=card.querySelector('.ws-wave');
@@ -180,35 +164,30 @@ document.addEventListener('DOMContentLoaded', () => {
       const ws = WaveSurfer.create({
         container: wave,
         waveColor:'rgba(255,255,255,0.4)',
-        progressColor:'rgba(255,255,255,0.8)',
+        progressColor:'rgba(255,255,255,0.85)',
         height:64, barWidth:2, barRadius:2, responsive:true,
         url
       });
       wsInstances.push(ws);
 
-      ws.on('ready', ()=>{
-        clearErr(card);
-        time.textContent = `0:00 / ${fmtTime(ws.getDuration())}`;
-      });
+      ws.on('ready', ()=>{ clearErr(card); time.textContent = `0:00 / ${fmtTime(ws.getDuration())}`; });
       const onTick = (t)=>{ time.textContent = `${fmtTime(t)} / ${fmtTime(ws.getDuration())}`; };
       ws.on('timeupdate', onTick);
       ws.on('audioprocess', onTick);
       ws.on('pause', ()=>{ btn.textContent='▶'; });
       ws.on('play',  ()=>{ btn.textContent='⏸'; pauseOthers(ws); });
+      ws.on('error', ()=>{ showErr(card, 'Soitin ei voinut avata tiedostoa.', url); });
 
-      ws.on('error', ()=>{ showErr(card, 'Soitin ei voinut avata tiedostoa.'); });
-
-      // single-click play/pause
       btn.addEventListener('click', ()=>{ ws.playPause(); });
     });
   }
 
-  /* ===== Content (updated text + exact filenames) ===== */
+  /* Content (bio subtitle updated to Pedagogi + exact filenames) */
   const content = {
     bio: `
       <section class="panel">
         <h1>Niko Aaltonen</h1>
-        <p>Muusikko • Säveltäjä • Monialainen taiteilija</p>
+        <p>Muusikko • Säveltäjä • Pedagogi</p>
         <p>Niko Aaltonen on säveltäjä, äänisuunnittelija ja monialainen taiteilija Turusta. Hänen taustansa musiikkituotannon ja teatterin parissa näkyy työssä, jossa yhdistyvät tunnelmalliset äänimaisemat ja vahva emotionaalinen syvyys. Niko luo musiikkia ja äänisuunnittelua, jotka kertovat tarinoita, herättävät muistoja ja tukevat esitysten visuaalista ja dramaturgista kokonaisuutta. Hänen äänimaailmansa liikkuvat klassisen musiikin, pop/rockin ja elektronisen kokeellisuuden välillä – rajoja pelottomasti rikkoen.</p>
         <p>Nikon musiikillinen polku alkoi jo nuorena, kun hän osti ensimmäisen kitaransa. Vuosien varrella hän on syventynyt intohimoisesti musiikin eri osa-alueisiin ja opiskellut laajasti useita genrejä ja soittimia, kuten bassoa, rumpuja ja laulua. Hän valmistui muusikoksi Turun konservatoriosta ja palveli tämän jälkeen Puolustusvoimien varusmiessoittokunnassa, josta hän valmistui aliupseerina. Tällä hetkellä Niko opiskelee huilunsoittoa Turun ammattikorkeakoulussa ja jatkaa musiikin tekemistä monipuolisesti eri muodoissa.</p>
       </section>
@@ -223,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="soolo-card panel">
           <h3>Julkaisu</h3>
           <div class="soolo-embeds">
-            <!-- Make Spotify same size as YouTube by using the same 16:9 wrapper -->
+            <!-- Spotify same 16:9 footprint as YouTube -->
             <div class="embed embed-16x9">
               <iframe loading="lazy" src="https://open.spotify.com/embed/track/4xiEQA4enJbKFnzzgcbjqj" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"></iframe>
             </div>
@@ -243,12 +222,12 @@ document.addEventListener('DOMContentLoaded', () => {
     teatteri: `
       <section class="panel"><h2>Näytteitä teatterimusiikista</h2></section>
 
-      <section class="panel"><h3>Musiikkia näytelmästä Selli</h3><p class="sub">Traumaa ja sekavia tunteita</p>
+      <section class="panel"><h3>Musiikkia näytelmästä Selli</h3><p class="sub" style="margin:-6px 0 12px;color:var(--muted);font-style:italic">Traumaa ja sekavia tunteita</p>
         ${audioCard("selli_2naytos6kohtaus.mp3", "Teeman huipennus", "teatteri_aanisuunnittelu")}
         ${audioCard("selli_4naytos1kohtaus.mp3", "Järkensä menettänyt", "teatteri_aanisuunnittelu")}
       </section>
 
-      <section class="panel"><h3>Musiikkia näytelmästä Mimmilehmän ja Variksen kesäpäivä laitumella</h3><p class="sub">Hullunkurista hauskaa</p>
+      <section class="panel"><h3>Musiikkia näytelmästä Mimmilehmän ja Variksen kesäpäivä laitumella</h3><p class="sub" style="margin:-6px 0 12px;color:var(--muted);font-style:italic">Hullunkurista hauskaa</p>
         ${audioCard("Intromusa.mp3", "Intromusa", "teatteri_aanisuunnittelu")}
         ${audioCard("Jännitys ja Skrätsi.mp3", "Jännitys ja Skrätsi", "teatteri_aanisuunnittelu")}
         ${audioCard("Varis odottaa.mp3", "Varis odottaa", "teatteri_aanisuunnittelu")}
@@ -290,13 +269,12 @@ document.addEventListener('DOMContentLoaded', () => {
     `
   };
 
-  /* ===== Background + theme + nav highlight ===== */
+  /* Background + theme + nav highlight */
   const bgClass = { bio:'bg-bio', soolotuotanto:'bg-soolo', teatteri:'bg-teat', elektroninen:'bg-elek', yhteys:'bg-ytx' };
   const themeClass = { bio:'theme-bio', soolotuotanto:'theme-soolo', teatteri:'theme-teat', elektroninen:'theme-elek', yhteys:'theme-ytx' };
 
   function applyTheme(cat){
-    document.body.classList.remove('bg-bio','bg-soolo','bg-teat','bg-elek','bg-ytx','theme-bio','theme-soolo','theme-teat','theme-elek','theme-ytx');
-    document.body.classList.add(bgClass[cat]||'bg-bio', themeClass[cat]||'theme-bio');
+    document.body.className = (bgClass[cat]||'bg-bio') + ' ' + (themeClass[cat]||'theme-bio');
     document.querySelectorAll('.cat').forEach(a => a.classList.toggle('active', a.dataset.cat===cat));
   }
 
