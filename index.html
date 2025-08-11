@@ -10,9 +10,9 @@
   --muted: #a9adb6;
   --stroke: rgba(255, 255, 255, 0.08);
   --panel: rgba(20, 20, 24, 0.5);
-  --c-selli: #8b0000;
-  --c-mimmi: #006666;
-  --c-meri: #8B5A00;
+  --c-selli: #8b0000;  /* deep dark red */
+  --c-mimmi: #006666;  /* deep dark turquoise */
+  --c-meri: #8B5A00;   /* deep dark amber */
 }
 
 * { box-sizing: border-box; }
@@ -38,15 +38,8 @@ html, body {
   .wrap { grid-template-columns: 1fr; }
 }
 
-.sidebar {
-  position: sticky;
-  top: 16px;
-}
-
-.side-grid {
-  display: grid;
-  gap: 10px;
-}
+.sidebar { position: sticky; top: 16px; }
+.side-grid { display: grid; gap: 10px; }
 
 .cat {
   display: block;
@@ -115,7 +108,7 @@ html, body {
 }
 .ws-wave { height: 64px; }
 
-/* Embed styles */
+/* Embeds */
 .soolo-grid {
   display:grid;
   gap:16px;
@@ -161,7 +154,7 @@ html, body {
 
 <script src="https://unpkg.com/wavesurfer.js@7"></script>
 <script>
-// Slideshow
+// ===== Slideshow =====
 const slides = document.querySelectorAll('.slide');
 let idx = 0;
 setInterval(() => {
@@ -170,12 +163,19 @@ setInterval(() => {
   slides[idx].classList.add('active');
 }, 7000);
 
-// Helper to make audio cards
+// ===== Helpers =====
 function audioCard(file, title, folder) {
   return `<div class="ws-card" data-audio="${encodeURI(`audio/${folder}/${file}`)}" data-title="${title}"></div>`;
 }
 
-// Content templates
+// Track Wavesurfer instances so we don't leak on tab switches
+let wsInstances = [];
+function destroyPlayers() {
+  wsInstances.forEach(ws => { try { ws.destroy(); } catch(e){} });
+  wsInstances = [];
+}
+
+// ===== Content =====
 const content = {
   bio: `
     <section class="panel">
@@ -184,46 +184,55 @@ const content = {
       <p>Niko Aaltonen on säveltäjä, äänisuunnittelija ja monialainen taiteilija Turusta. Hänen taustansa musiikkituotannon ja teatterin parissa näkyy työssä, jossa yhdistyvät tunnelmalliset äänimaisemat ja vahva emotionaalinen syvyys. Niko luo musiikkia ja äänisuunnittelua, jotka kertovat tarinoita, herättävät muistoja ja tukevat esitysten visuaalista ja dramaturgista kokonaisuutta. Hänen äänimaailmansa liikkuvat klassisen musiikin, pop/rockin ja elektronisen kokeellisuuden välillä – rajoja pelottomasti rikkoen. Nikon musiikillinen polku alkoi jo nuorena, kun hän osti ensimmäisen kitaransa. Vuosien varrella hän on syventynyt intohimoisesti musiikin eri osa-alueisiin ja opiskellut laajasti useita genrejä ja soittimia, kuten bassoa, rumpuja ja laulua. Hän valmistui muusikoksi Turun konservatoriosta ja palveli tämän jälkeen Puolustusvoimien varusmiessoittokunnassa, josta hän valmistui aliupseerina. Tällä hetkellä Niko opiskelee huilunsoittoa Turun ammattikorkeakoulussa ja jatkaa musiikin tekemistä monipuolisesti eri muodoissa.</p>
     </section>
   `,
+
   soolotuotanto: `
     <section class="panel">
       <h2>Soolotuotanto</h2>
       <p>Valikoituja julkaisuja ja äänitteitä.</p>
     </section>
+
+    <!-- Embeds -->
     <section class="soolo-grid">
       <div class="soolo-card panel">
         <h3>Julkaisu</h3>
         <div class="soolo-embeds">
           <div class="embed embed-spotify">
-            <iframe src="https://open.spotify.com/embed/track/4xiEQA4enJbKFnzzgcbjqj" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"></iframe>
+            <iframe loading="lazy" src="https://open.spotify.com/embed/track/4xiEQA4enJbKFnzzgcbjqj" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"></iframe>
           </div>
           <div class="embed embed-16x9">
-            <iframe src="https://www.youtube.com/embed/Juo7VjB8-1w" frameborder="0" allowfullscreen></iframe>
+            <iframe loading="lazy" src="https://www.youtube.com/embed/Juo7VjB8-1w?rel=0&modestbranding=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
           </div>
         </div>
       </div>
     </section>
+
+    <!-- Extra audio inside Soolotuotanto -->
     <section class="panel">
       <h3>Äänitteet</h3>
       ${audioCard("Halusin Kertoo.mp3", "Halusin Kertoo", "soolotuotanto")}
       ${audioCard("Taitelija.mp3", "Taitelija", "soolotuotanto")}
     </section>
   `,
+
   teatteri: `
     <section class="panel"><h2>Selli</h2>
-      ${audioCard("selli_2naytos6kohtaus.mp3", "Teeman huipennus", "teatteri_äänisuunnittelu")}
-      ${audioCard("selli_4naytos1kohtaus.mp3", "Järkensä menettänyt", "teatteri_äänisuunnittelu")}
+      ${audioCard("selli_2naytos6kohtaus.mp3", "Teeman huipennus", "teatteri_aanisuunnittelu")}
+      ${audioCard("selli_4naytos1kohtaus.mp3", "Järkensä menettänyt", "teatteri_aanisuunnittelu")}
     </section>
+
     <section class="panel"><h2>Mimmilehmän ja Variksen kesäpäivä laitumella</h2>
-      ${audioCard("Intromusa.mp3", "Intromusa", "teatteri_äänisuunnittelu")}
-      ${audioCard("Jännitys ja Skrätsi.mp3", "Jännitys ja Skrätsi", "teatteri_äänisuunnittelu")}
-      ${audioCard("Varis odottaa.mp3", "Varis odottaa", "teatteri_äänisuunnittelu")}
-      ${audioCard("39. Toka tanssi.mp3", "Toka tanssi", "teatteri_äänisuunnittelu")}
-      ${audioCard("Viimeinen tanssi.mp3", "Viimeinen tanssi", "teatteri_äänisuunnittelu")}
+      ${audioCard("Intromusa.mp3", "Intromusa", "teatteri_aanisuunnittelu")}
+      ${audioCard("Jännitys ja Skrätsi.mp3", "Jännitys ja Skrätsi", "teatteri_aanisuunnittelu")}
+      ${audioCard("Varis odottaa.mp3", "Varis odottaa", "teatteri_aanisuunnittelu")}
+      ${audioCard("39. Toka tanssi.mp3", "Toka tanssi", "teatteri_aanisuunnittelu")}
+      ${audioCard("Viimeinen tanssi.mp3", "Viimeinen tanssi", "teatteri_aanisuunnittelu")}
     </section>
+
     <section class="panel"><h2>Merituulet</h2>
-      ${audioCard("Merituulet.mp3", "Merituulet", "teatteri_äänisuunnittelu")}
+      ${audioCard("Merituulet.mp3", "Merituulet", "teatteri_aanisuunnittelu")}
     </section>
   `,
+
   elektroninen: `
     <section class="panel"><h2>Elektroninen / Kokeellinen</h2>
       ${audioCard("1. Elämä on työ.mp3", "Elämä on työ", "elektroninen")}
@@ -234,19 +243,26 @@ const content = {
       ${audioCard("6. Dundun.mp3", "Dundun", "elektroninen")}
     </section>
   `,
+
   yhteys: `
     <section class="panel">
       <h2>Palvelut / Yhteystiedot</h2>
+
       <h3>Sävellys</h3>
       <p>Teen sävellyksiä klassisesta musiikista teatteri- ja elokuvamusiikkiin sekä kokonaisiin ääniraitoihin — mihin tahansa projektiin, jonka haluat herättää eloon.</p>
+
       <h3>Laulunkirjoitus</h3>
       <p>Kirjoitan kappaleita popista, rockista ja metallista aina sooloartistien biitteihin asti. Älä epäröi pyytää myös muiden tyylilajien teoksia.</p>
+
       <h3>Miksaus</h3>
       <p>Miksaan kappaleesi tuoden siihen selkeyttä, syvyyttä ja viimeistellyn soinnin.</p>
+
       <h3>Kitara-, basso- ja huilutunnit</h3>
       <p>35€/h. Voimme luoda pitkäaikaisemman suunnitelman taitojesi kehittämiseksi tai keskittyä yksittäisiin ongelmiin, joissa koet olevasi jumissa.</p>
+
       <h3>Sävellys- ja laulunkirjoitusopetus</h3>
       <p>Mahdollista pyynnöstä!</p>
+
       <h3>Yhteystiedot</h3>
       <p>Puhelin: 045 110 7090 <em>(soitto, tekstiviesti, WhatsApp)</em><br>
          Sähköposti: aaltonenniko989@gmail.com</p>
@@ -254,7 +270,7 @@ const content = {
   `
 };
 
-// Category colors
+// Category backgrounds
 const bgColors = {
   bio: "#111",
   soolotuotanto: "#222",
@@ -263,7 +279,9 @@ const bgColors = {
   yhteys: "#111"
 };
 
+// Loader
 function loadContent(cat) {
+  destroyPlayers();
   document.getElementById('content-area').innerHTML = content[cat];
   document.body.style.background = bgColors[cat];
   initPlayers();
@@ -281,6 +299,7 @@ function initPlayers() {
   document.querySelectorAll('.ws-card').forEach(card => {
     const url = card.dataset.audio;
     const title = card.dataset.title;
+
     card.innerHTML = `
       <div><strong>${title}</strong></div>
       <div class="ws-row">
@@ -288,6 +307,7 @@ function initPlayers() {
         <div class="ws-wave"></div>
       </div>
     `;
+
     const ws = WaveSurfer.create({
       container: card.querySelector('.ws-wave'),
       waveColor: 'rgba(255,255,255,0.4)',
@@ -298,6 +318,8 @@ function initPlayers() {
       responsive: true,
       url: url
     });
+    wsInstances.push(ws);
+
     const btn = card.querySelector('.ws-play');
     btn.addEventListener('click', () => {
       ws.playPause();
@@ -306,7 +328,7 @@ function initPlayers() {
   });
 }
 
-// Load default view
+// Default view
 loadContent('bio');
 </script>
 </body>
