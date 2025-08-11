@@ -69,14 +69,8 @@ html,body{ margin:0; height:100%; font-family:Inter,system-ui,sans-serif; color:
 .embed{ width:100%; border-radius:12px; overflow:hidden; border:1px solid var(--stroke); background:rgba(255,255,255,.04); }
 .embed-16x9{ position:relative; padding-top:56.25%; }
 .embed-16x9 iframe{ position:absolute; inset:0; width:100%; height:100%; }
-
-/* Make Spotify fill 16:9 equally (scaled to cover) */
-.embed-16x9.spot-zoom{ overflow:hidden; }
-.embed-16x9.spot-zoom iframe{
-  position:absolute; top:50%; left:50%;
-  width:640px; height:152px; /* native Spotify size */
-  transform-origin:center; transform:translate(-50%,-50%) scale(var(--spot-scale,1));
-}
+/* back to the compact Spotify card */
+.embed-spotify iframe{ width:100%; height:152px; }
 </style>
 </head>
 <body class="bg-bio theme-bio">
@@ -190,17 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  /* ===== Spotify scale to fill 16:9 ===== */
-  function scaleSpotify(){
-    document.querySelectorAll('.spot-zoom').forEach(box=>{
-      const r = box.getBoundingClientRect();
-      const scale = Math.max(r.width/640, r.height/152); // cover
-      box.style.setProperty('--spot-scale', scale);
-    });
-  }
-  window.addEventListener('resize', scaleSpotify);
-
-  /* ===== Content (with swaps + filenames) ===== */
+  /* ===== Content (with swaps + exact filenames) ===== */
   const content = {
     bio: `
       <section class="panel">
@@ -220,8 +204,8 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="soolo-card panel">
           <h3>Julkaisu</h3>
           <div class="soolo-embeds">
-            <!-- Spotify 16:9, scaled to cover -->
-            <div class="embed embed-16x9 spot-zoom">
+            <!-- Compact Spotify card (back to previous look) -->
+            <div class="embed embed-spotify">
               <iframe loading="lazy" src="https://open.spotify.com/embed/track/4xiEQA4enJbKFnzzgcbjqj" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"></iframe>
             </div>
             <div class="embed embed-16x9">
@@ -234,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <section class="panel">
         <h3>Äänitteet</h3>
         ${audioCard("Halusin Kertoo.mp3", "Halusin Kertoo", "soolotuotanto")}
-        ${audioCard("Taiteilija.mp3", "Taiteilija", "soolotuotanto")}
+        ${audioCard("taitelija.mp3", "Taiteilija", "soolotuotanto")}
       </section>
     `,
     teatteri: `
@@ -287,16 +271,12 @@ document.addEventListener('DOMContentLoaded', () => {
     `
   };
 
-  /* ===== Color SWAPS requested =====
-     - Bio ↔︎ Soolotuotanto
-     - Teatteri ↔︎ Elektroninen
-     - Yhteys = its own warm palette
-  */
+  /* ===== Color swaps requested ===== */
   const bgClass = {
-    bio:'bg-soolo',            // swapped
-    soolotuotanto:'bg-bio',   // swapped
-    teatteri:'bg-elek',       // swapped
-    elektroninen:'bg-teat',   // swapped
+    bio:'bg-soolo',
+    soolotuotanto:'bg-bio',
+    teatteri:'bg-elek',
+    elektroninen:'bg-teat',
     yhteys:'bg-ytx'
   };
   const themeClass = {
@@ -320,7 +300,6 @@ document.addEventListener('DOMContentLoaded', () => {
     area.innerHTML = content[cat];
     destroyPlayers();
     wirePlayers(area);
-    scaleSpotify(); // keep embeds visually equal
   }
   window.addEventListener('hashchange', renderFromHash);
   renderFromHash();
