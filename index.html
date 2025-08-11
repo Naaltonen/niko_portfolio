@@ -5,12 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Niko Aaltonen — Portfolio</title>
 <style>
-:root{
-  --ink:#e9ebef;                 /* main text (changes via themes) */
-  --muted:#a9adb6;               /* secondary text */
-  --stroke:rgba(255,255,255,.08);
-  --panel:rgba(20,20,24,.5);
-}
+:root{ --ink:#e9ebef; --muted:#a9adb6; --stroke:rgba(255,255,255,.08); --panel:rgba(20,20,24,.5); }
 
 /* vivid but tasteful gradients per section */
 .bg-bio  { background: radial-gradient(1200px 600px at 10% 10%,  #0f172a 0%, #0b1220 55%, #070b12 100%); }
@@ -19,7 +14,7 @@
 .bg-elek { background: radial-gradient(1200px 600px at 90% 90%,  #0a3b37 0%, #128277 40%, #072b29 100%); }
 .bg-ytx  { background: radial-gradient(1200px 600px at 50% 50%,  #0f172a 0%, #0b1220 50%, #070b12 100%); }
 
-/* themed text/accents (no plain white) */
+/* themed text/accents */
 .theme-bio  { --ink:#E7EEF9; --accent:#9BC2FF; }
 .theme-soolo{ --ink:#EEE9FF; --accent:#B7A6FF; }
 .theme-teat { --ink:#FFE5E5; --accent:#FF9F9F; }
@@ -45,24 +40,19 @@ html,body{ margin:0; height:100%; font-family:Inter,system-ui,sans-serif; color:
   border-radius:12px; padding:18px; backdrop-filter:blur(8px); margin-bottom:20px;
 }
 
-/* Hero — adaptive, side-by-side collages, subtle corner fade */
+/* Hero — side-by-side collages + fade corners */
 .hero{
   --ar: 16/9; aspect-ratio: var(--ar);
   max-height: 60vh; min-height: 280px;
   border-radius:12px; overflow:hidden; position:relative; width:100%;
-  /* fade corners to page background */
   -webkit-mask-image: radial-gradient(135% 135% at 50% 50%, #000 78%, rgba(0,0,0,0) 100%);
           mask-image: radial-gradient(135% 135% at 50% 50%, #000 78%, rgba(0,0,0,0) 100%);
 }
 .slide{ position:absolute; inset:0; opacity:0; transition:opacity 1s ease-in-out; display:flex; }
 .slide.active{ opacity:1; }
 .slide img{ width:100%; height:100%; object-fit:contain; object-position:center; }
-
-/* 2-up collage slides */
 .slide.duo{ display:grid; grid-template-columns:1fr 1fr; gap:10px; align-items:center; }
 .slide.duo img{ width:100%; height:100%; object-fit:cover; border-radius:8px; }
-
-/* “gentle crop” for Kuva 2 */
 .slide img.cover-lean{ object-fit:cover; }
 
 /* Players */
@@ -80,10 +70,6 @@ html,body{ margin:0; height:100%; font-family:Inter,system-ui,sans-serif; color:
 .embed{ width:100%; border-radius:12px; overflow:hidden; border:1px solid var(--stroke); background:rgba(255,255,255,.04); }
 .embed-16x9{ position:relative; padding-top:56.25%; }
 .embed-16x9 iframe{ position:absolute; inset:0; width:100%; height:100%; }
-.embed-spotify iframe{ width:100%; height:152px; }
-
-/* tiny subtitle style */
-.sub{ margin:-6px 0 12px; color:var(--muted); font-style:italic; }
 </style>
 </head>
 <body class="bg-bio theme-bio">
@@ -100,7 +86,7 @@ html,body{ margin:0; height:100%; font-family:Inter,system-ui,sans-serif; color:
   </aside>
 
   <main id="main-content">
-    <!-- Hero (with duo slides & gentle crop on #2) -->
+    <!-- Hero -->
     <section class="hero" id="hero">
       <!-- 1 + 3 together -->
       <div class="slide duo active">
@@ -142,12 +128,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* ===== Helpers ===== */
   function audioCard(file, title, folder) {
-    const url = encodeURI('audio/' + folder + '/' + file);
+    const url = 'audio/' + encodeURIComponent(folder) + '/' + encodeURIComponent(file);
     return (
 `<div class="ws-card" data-file="${url}">
   <div><strong>${title}</strong></div>
   <div class="ws-row">
-    <button class="ws-play" data-state="idle">▶</button>
+    <button class="ws-play">▶</button>
     <div class="ws-wave"></div>
     <div class="ws-time">0:00 / 0:00</div>
   </div>
@@ -173,66 +159,56 @@ document.addEventListener('DOMContentLoaded', () => {
     el.textContent = '';
   }
 
-  // Preload duration via <audio> metadata so cards aren't "empty"
-  function prefetchDuration(card, url) {
-    const time = card.querySelector('.ws-time');
-    const probe = new Audio();
-    probe.preload = 'metadata';
-    probe.src = url;
-    probe.addEventListener('loadedmetadata', () => {
-      time.textContent = `0:00 / ${fmtTime(probe.duration)}`;
-      clearErr(card);
-      probe.src = '';
-    });
-    probe.addEventListener('error', () => {
-      showErr(card, 'Tiedostoa ei voitu ladata. Tarkista polku tai tiedoston nimi.');
-    });
+  // keep a global list to pause others
+  let wsInstances = [];
+  function pauseOthers(except){
+    wsInstances.forEach(w => { if (w !== except && w.isPlaying()) w.pause(); });
+  }
+  function destroyPlayers(){
+    wsInstances.forEach(w => { try{ w.destroy(); } catch(e){} });
+    wsInstances = [];
   }
 
-  let wsInstances = [];
-  function destroyPlayers(){ wsInstances.forEach(ws=>{ try{ws.destroy()}catch(e){} }); wsInstances=[]; }
-
+  // Build players immediately (wave visible before click)
   function wirePlayers(scope=document){
     scope.querySelectorAll('.ws-card').forEach(card=>{
-      let ws=null;
-      const btn=card.querySelector('.ws-play');
       const wave=card.querySelector('.ws-wave');
+      const btn=card.querySelector('.ws-play');
       const time=card.querySelector('.ws-time');
       const url=card.dataset.file;
 
-      // show duration early
-      prefetchDuration(card, url);
+      const ws = WaveSurfer.create({
+        container: wave,
+        waveColor:'rgba(255,255,255,0.4)',
+        progressColor:'rgba(255,255,255,0.8)',
+        height:64, barWidth:2, barRadius:2, responsive:true,
+        url
+      });
+      wsInstances.push(ws);
 
-      const ensureWS=()=>{
-        if (ws) return ws;
-        ws = WaveSurfer.create({
-          container: wave,
-          waveColor:'rgba(255,255,255,0.4)',
-          progressColor:'rgba(255,255,255,0.8)',
-          height:64, barWidth:2, barRadius:2, responsive:true,
-          url
-        });
-        wsInstances.push(ws);
-        ws.on('ready', ()=>{ time.textContent = `0:00 / ${fmtTime(ws.getDuration())}`; clearErr(card); });
-        const onTick = (t)=>{ time.textContent = `${fmtTime(t)} / ${fmtTime(ws.getDuration())}`; };
-        ws.on('timeupdate', onTick);
-        ws.on('audioprocess', onTick);
-        ws.on('pause', ()=>{ btn.textContent='▶'; });
-        ws.on('play',  ()=>{ btn.textContent='⏸'; });
-        ws.on('error', ()=>{ showErr(card, 'Soitin ei voinut avata tiedostoa.'); });
-        return ws;
-      };
+      ws.on('ready', ()=>{
+        clearErr(card);
+        time.textContent = `0:00 / ${fmtTime(ws.getDuration())}`;
+      });
+      const onTick = (t)=>{ time.textContent = `${fmtTime(t)} / ${fmtTime(ws.getDuration())}`; };
+      ws.on('timeupdate', onTick);
+      ws.on('audioprocess', onTick);
+      ws.on('pause', ()=>{ btn.textContent='▶'; });
+      ws.on('play',  ()=>{ btn.textContent='⏸'; pauseOthers(ws); });
 
-      btn.addEventListener('click', ()=>{ ensureWS().playPause(); });
+      ws.on('error', ()=>{ showErr(card, 'Soitin ei voinut avata tiedostoa.'); });
+
+      // single-click play/pause
+      btn.addEventListener('click', ()=>{ ws.playPause(); });
     });
   }
 
-  /* ===== Content (FILENAMES EXACTLY AS YOU UPLOADED) ===== */
+  /* ===== Content (updated text + exact filenames) ===== */
   const content = {
     bio: `
       <section class="panel">
         <h1>Niko Aaltonen</h1>
-        <p>Säveltäjä • äänisuunnittelija • monialainen taiteilija</p>
+        <p>Muusikko • Säveltäjä • Monialainen taiteilija</p>
         <p>Niko Aaltonen on säveltäjä, äänisuunnittelija ja monialainen taiteilija Turusta. Hänen taustansa musiikkituotannon ja teatterin parissa näkyy työssä, jossa yhdistyvät tunnelmalliset äänimaisemat ja vahva emotionaalinen syvyys. Niko luo musiikkia ja äänisuunnittelua, jotka kertovat tarinoita, herättävät muistoja ja tukevat esitysten visuaalista ja dramaturgista kokonaisuutta. Hänen äänimaailmansa liikkuvat klassisen musiikin, pop/rockin ja elektronisen kokeellisuuden välillä – rajoja pelottomasti rikkoen.</p>
         <p>Nikon musiikillinen polku alkoi jo nuorena, kun hän osti ensimmäisen kitaransa. Vuosien varrella hän on syventynyt intohimoisesti musiikin eri osa-alueisiin ja opiskellut laajasti useita genrejä ja soittimia, kuten bassoa, rumpuja ja laulua. Hän valmistui muusikoksi Turun konservatoriosta ja palveli tämän jälkeen Puolustusvoimien varusmiessoittokunnassa, josta hän valmistui aliupseerina. Tällä hetkellä Niko opiskelee huilunsoittoa Turun ammattikorkeakoulussa ja jatkaa musiikin tekemistä monipuolisesti eri muodoissa.</p>
       </section>
@@ -247,7 +223,8 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="soolo-card panel">
           <h3>Julkaisu</h3>
           <div class="soolo-embeds">
-            <div class="embed embed-spotify">
+            <!-- Make Spotify same size as YouTube by using the same 16:9 wrapper -->
+            <div class="embed embed-16x9">
               <iframe loading="lazy" src="https://open.spotify.com/embed/track/4xiEQA4enJbKFnzzgcbjqj" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"></iframe>
             </div>
             <div class="embed embed-16x9">
@@ -329,9 +306,7 @@ document.addEventListener('DOMContentLoaded', () => {
     applyTheme(cat);
     const area = document.getElementById('content-area');
     area.innerHTML = content[cat];
-    // rebuild players
-    wsInstances.forEach(ws=>{ try{ws.destroy()}catch(e){} });
-    wsInstances = [];
+    destroyPlayers();
     wirePlayers(area);
   }
   window.addEventListener('hashchange', renderFromHash);
