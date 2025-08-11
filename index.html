@@ -12,10 +12,10 @@
 .bg-soolo{ background: radial-gradient(1200px 600px at 90% 10%,  #1f1d55 0%, #2f2aa6 45%, #1b1761 100%); }
 .bg-teat { background: radial-gradient(1200px 600px at 10% 90%,  #5b0d0d 0%, #8b1e1e 40%, #2a0b0b 100%); }
 .bg-elek { background: radial-gradient(1200px 600px at 90% 90%,  #0a3b37 0%, #128277 40%, #072b29 100%); }
-/* inviting contact — warm, distinct from Bio */
+/* inviting contact — warm, distinct */
 .bg-ytx  { background: radial-gradient(1200px 600px at 50% 50%,  #2a1b1b 0%, #3f2716 45%, #1b100a 100%); }
 
-/* Themed text/accents (no plain white) */
+/* Themed text/accents */
 .theme-bio  { --ink:#E7EEF9; --accent:#9BC2FF; }
 .theme-soolo{ --ink:#EEE9FF; --accent:#B7A6FF; }
 .theme-teat { --ink:#D7FFF4; --accent:#7FFFE1; }
@@ -69,11 +69,10 @@ html,body{ margin:0; height:100%; font-family:Inter,system-ui,sans-serif; color:
 .embed{ width:100%; border-radius:12px; overflow:hidden; border:1px solid var(--stroke); background:rgba(255,255,255,.04); }
 .embed-16x9{ position:relative; padding-top:56.25%; }
 .embed-16x9 iframe{ position:absolute; inset:0; width:100%; height:100%; }
-/* back to the compact Spotify card */
-.embed-spotify iframe{ width:100%; height:152px; }
+.embed-spotify iframe{ width:100%; height:152px; } /* compact Spotify */
 </style>
 </head>
-<body class="bg-bio theme-bio">
+<body class="bg-soolo theme-soolo"><!-- swapped colors: Bio <-> Soolo -->
 
 <div class="wrap">
   <aside class="sidebar">
@@ -123,11 +122,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 7000);
   }
 
+  /* ===== Robust audio URL resolver ===== */
+  async function headOk(url){
+    try {
+      const res = await fetch(url, { method:'HEAD', cache:'no-store' });
+      return res.ok;
+    } catch(e){ return false; }
+  }
+  async function resolveAudioUrl(folder, file){
+    const folderCands = [folder, folder[0].toUpperCase()+folder.slice(1)]; // soolotuotanto / Soolotuotanto
+    const fileCands = [
+      file,
+      file.replace(/\.mp3$/i, '.MP3'),
+      file.toLowerCase(),
+      file.toUpperCase()
+    ];
+    for (const fldr of folderCands){
+      for (const fil of fileCands){
+        const url = 'audio/' + encodeURIComponent(fldr) + '/' + encodeURIComponent(fil);
+        if (await headOk(url)) return url;
+      }
+    }
+    return null;
+  }
+
   /* ===== Helpers ===== */
   function audioCard(file, title, folder) {
-    const url = 'audio/' + encodeURIComponent(folder) + '/' + encodeURIComponent(file);
     return (
-`<div class="ws-card" data-file="${url}">
+`<div class="ws-card" data-file="${file}" data-folder="${folder}">
   <div><strong>${title}</strong></div>
   <div class="ws-row">
     <button class="ws-play">▶</button>
@@ -155,13 +177,19 @@ document.addEventListener('DOMContentLoaded', () => {
   function pauseOthers(except){ wsInstances.forEach(w => { if (w !== except && w.isPlaying()) w.pause(); }); }
   function destroyPlayers(){ wsInstances.forEach(w=>{ try{w.destroy()}catch(e){} }); wsInstances=[]; }
 
-  /* Build players immediately: waveform visible; single-click play; pause others */
-  function wirePlayers(scope=document){
-    scope.querySelectorAll('.ws-card').forEach(card=>{
+  /* Build players: resolve URL first so waveform is ready; single-click play; pause others */
+  async function wirePlayers(scope=document){
+    const cards = scope.querySelectorAll('.ws-card');
+    for (const card of cards){
       const wave=card.querySelector('.ws-wave');
       const btn=card.querySelector('.ws-play');
       const time=card.querySelector('.ws-time');
-      const url=card.dataset.file;
+      const desiredFile=card.dataset.file;   // original filename as given below
+      const folder=card.dataset.folder;
+
+      // find a working URL (handles Taiteilija/taitelija and folder case)
+      const url = await resolveAudioUrl(folder, desiredFile);
+      if (!url){ showErr(card, 'Tiedostoa ei löytynyt', desiredFile); continue; }
 
       const ws = WaveSurfer.create({
         container: wave,
@@ -181,10 +209,10 @@ document.addEventListener('DOMContentLoaded', () => {
       ws.on('error', ()=>{ showErr(card, 'Soitin ei voinut avata tiedostoa.', url); });
 
       btn.addEventListener('click', ()=>{ ws.playPause(); });
-    });
+    }
   }
 
-  /* ===== Content (with swaps + exact filenames) ===== */
+  /* ===== Content ===== */
   const content = {
     bio: `
       <section class="panel">
@@ -204,7 +232,6 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="soolo-card panel">
           <h3>Julkaisu</h3>
           <div class="soolo-embeds">
-            <!-- Compact Spotify card (back to previous look) -->
             <div class="embed embed-spotify">
               <iframe loading="lazy" src="https://open.spotify.com/embed/track/4xiEQA4enJbKFnzzgcbjqj" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"></iframe>
             </div>
@@ -218,7 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <section class="panel">
         <h3>Äänitteet</h3>
         ${audioCard("Halusin Kertoo.mp3", "Halusin Kertoo", "soolotuotanto")}
-        ${audioCard("taitelija.mp3", "Taiteilija", "soolotuotanto")}
+        ${audioCard("Taiteilija.mp3", "Taiteilija", "soolotuotanto")}
       </section>
     `,
     teatteri: `
@@ -271,20 +298,12 @@ document.addEventListener('DOMContentLoaded', () => {
     `
   };
 
-  /* ===== Color swaps requested ===== */
+  /* ===== Color swaps (Bio<->Soolo, Teat<->Elek) ===== */
   const bgClass = {
-    bio:'bg-soolo',
-    soolotuotanto:'bg-bio',
-    teatteri:'bg-elek',
-    elektroninen:'bg-teat',
-    yhteys:'bg-ytx'
+    bio:'bg-soolo', soolotuotanto:'bg-bio', teatteri:'bg-elek', elektroninen:'bg-teat', yhteys:'bg-ytx'
   };
   const themeClass = {
-    bio:'theme-soolo',
-    soolotuotanto:'theme-bio',
-    teatteri:'theme-elek',
-    elektroninen:'theme-teat',
-    yhteys:'theme-ytx'
+    bio:'theme-soolo', soolotuotanto:'theme-bio', teatteri:'theme-elek', elektroninen:'theme-teat', yhteys:'theme-ytx'
   };
 
   function applyTheme(cat){
@@ -292,14 +311,14 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.cat').forEach(a => a.classList.toggle('active', a.dataset.cat===cat));
   }
 
-  function renderFromHash() {
+  async function renderFromHash() {
     const cat = (location.hash.replace('#','') || 'bio');
     if (!content[cat]) return;
     applyTheme(cat);
     const area = document.getElementById('content-area');
     area.innerHTML = content[cat];
     destroyPlayers();
-    wirePlayers(area);
+    await wirePlayers(area);
   }
   window.addEventListener('hashchange', renderFromHash);
   renderFromHash();
