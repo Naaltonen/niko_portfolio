@@ -8,29 +8,42 @@
 :root{
   --ink:#e9ebef; --muted:#a9adb6; --stroke:rgba(255,255,255,.08);
   --panel:rgba(20,20,24,.5);
+  /* subtle deep tones per section */
   --c-bio:#0f1115; --c-soolo:#151722; --c-teat:#1b1a1d;
-  --c-elek:#131a1a; --c-ytx:#0f1115;
+  --c-elek:#131a1a; --c-ytx:#101318;
 }
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;font-family:Inter,system-ui,sans-serif;color:var(--ink);background:#0f1115;transition:background-color .7s ease}
+html,body{
+  margin:0;height:100%;
+  font-family:Inter,system-ui,sans-serif;
+  color:var(--ink);
+  background:var(--c-bio);
+  transition:background-color .7s ease;
+}
 .wrap{display:grid;grid-template-columns:260px 1fr;max-width:1400px;margin:0 auto;gap:20px;padding:20px}
 @media (max-width:900px){.wrap{grid-template-columns:1fr}}
 
 .sidebar{position:sticky;top:16px}
 .side-grid{display:grid;gap:10px}
-.cat{display:block;padding:12px;border:1px solid var(--stroke);border-radius:8px;color:var(--ink);text-decoration:none;font-weight:600;background:rgba(255,255,255,.05);transition:.2s}
+.cat{
+  display:block;padding:12px;border:1px solid var(--stroke);border-radius:8px;
+  color:var(--ink);text-decoration:none;font-weight:600;background:rgba(255,255,255,.05);transition:.2s
+}
 .cat:hover{background:rgba(255,255,255,.1)}
 .cat.active{outline:2px solid rgba(255,255,255,.25);background:rgba(255,255,255,.12)}
 
-.panel{background:var(--panel);border:1px solid var(--stroke);border-radius:12px;padding:18px;backdrop-filter:blur(8px);margin-bottom:20px}
+.panel{
+  background:var(--panel);border:1px solid var(--stroke);
+  border-radius:12px;padding:18px;backdrop-filter:blur(8px);margin-bottom:20px
+}
 
-/* Hero (image fits perfectly, no dark corners) */
+/* Hero: no dark corners */
 .hero{border-radius:12px;overflow:hidden;position:relative;height:min(48vh,520px)}
 .slide{position:absolute;inset:0;opacity:0;transition:opacity 1.2s ease-in-out}
 .slide.active{opacity:1}
 .slide img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 
-/* Wavesurfer player */
+/* Wavesurfer players */
 .ws-card{display:grid;gap:10px;padding:14px;border-radius:12px;border:1px solid var(--stroke);background:rgba(255,255,255,.04);margin-bottom:10px}
 .ws-row{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}
 .ws-play{width:44px;height:44px;border-radius:10px;border:1px solid var(--stroke);background:rgba(255,255,255,.06);color:var(--ink);font-size:18px;cursor:pointer}
@@ -40,9 +53,7 @@ html,body{margin:0;height:100%;font-family:Inter,system-ui,sans-serif;color:var(
 /* Embeds */
 .soolo-grid{display:grid;gap:16px}
 .soolo-card .soolo-embeds{display:grid;gap:12px}
-@media (min-width:740px){
-  .soolo-card .soolo-embeds{grid-template-columns:1fr 1fr}
-}
+@media (min-width:740px){ .soolo-card .soolo-embeds{grid-template-columns:1fr 1fr} }
 .embed{width:100%;border-radius:12px;overflow:hidden;border:1px solid var(--stroke);background:rgba(255,255,255,.04)}
 .embed-16x9{position:relative;padding-top:56.25%}
 .embed-16x9 iframe{position:absolute;inset:0;width:100%;height:100%}
@@ -63,7 +74,7 @@ html,body{margin:0;height:100%;font-family:Inter,system-ui,sans-serif;color:var(
   </aside>
 
   <main id="main-content">
-    <!-- Slideshow (now uses <img> so it always covers) -->
+    <!-- Slideshow -->
     <section class="hero" id="hero">
       <div class="slide active"><img src="images/Kuva 1.jpeg" alt=""></div>
       <div class="slide"><img src="images/Kuva 2.jpeg" alt=""></div>
@@ -92,8 +103,9 @@ setInterval(() => {
 
 // ===== Helpers =====
 function audioCard(file, title, folder) {
+  const url = encodeURI('audio/' + folder + '/' + file);
   return `
-    <div class="ws-card" data-file="${encodeURI(`audio/${folder}/${file}`)}">
+    <div class="ws-card" data-file="${url}">
       <div><strong>${title}</strong></div>
       <div class="ws-row">
         <button class="ws-play" data-state="idle">▶</button>
@@ -109,14 +121,11 @@ const fmtTime = s => {
   return `${m}:${sec}`;
 };
 
-// Track WS instances so we can destroy on tab change
+// Track/destroy players on tab change
 let wsInstances = [];
-function destroyPlayers(){
-  wsInstances.forEach(ws => { try{ ws.destroy(); }catch(e){} });
-  wsInstances = [];
-}
+function destroyPlayers(){ wsInstances.forEach(ws=>{ try{ws.destroy()}catch(e){} }); wsInstances=[]; }
 
-// Lazy-init a player on first click
+// Lazy-init players on first click
 function wirePlayers(scope=document){
   scope.querySelectorAll('.ws-card').forEach(card=>{
     let ws=null;
@@ -135,10 +144,7 @@ function wirePlayers(scope=document){
         url
       });
       wsInstances.push(ws);
-      ws.on('ready', ()=>{
-        time.textContent = `0:00 / ${fmtTime(ws.getDuration())}`;
-      });
-      // Some builds use 'timeupdate', others 'audioprocess' — support both
+      ws.on('ready', ()=>{ time.textContent = `0:00 / ${fmtTime(ws.getDuration())}`; });
       const onTick = (t)=>{ time.textContent = `${fmtTime(t)} / ${fmtTime(ws.getDuration())}`; };
       ws.on('timeupdate', onTick);
       ws.on('audioprocess', onTick);
@@ -147,107 +153,8 @@ function wirePlayers(scope=document){
       return ws;
     };
 
-    btn.addEventListener('click', ()=>{
-      ensureWS().playPause();
-    });
+    btn.addEventListener('click', ()=>{ ensureWS().playPause(); });
   });
 }
 
-// ===== Content =====
-const content = {
-  bio: `
-    <section class="panel">
-      <h1>Niko Aaltonen</h1>
-      <p>Säveltäjä • äänisuunnittelija • monialainen taiteilija</p>
-      <p>Niko Aaltonen on säveltäjä, äänisuunnittelija ja monialainen taiteilija Turusta. Hänen taustansa musiikkituotannon ja teatterin parissa näkyy työssä, jossa yhdistyvät tunnelmalliset äänimaisemat ja vahva emotionaalinen syvyys. Niko luo musiikkia ja äänisuunnittelu<a style="display:none"></a>a, jotka kertovat tarinoita, herättävät muistoja ja tukevat esitysten visuaalista ja dramaturgista kokonaisuutta. Hänen äänimaailmansa liikkuvat klassisen musiikin, pop/rockin ja elektronisen kokeellisuuden välillä – rajoja pelottomasti rikkoen. Nikon musiikillinen polku alkoi jo nuorena, kun hän osti ensimmäisen kitaransa. Vuosien varrella hän on syventynyt intohimoisesti musiikin eri osa-alueisiin ja opiskellut laajasti useita genrejä ja soittimia, kuten bassoa, rumpuja ja laulua. Hän valmistui muusikoksi Turun konservatoriosta ja palveli tämän jälkeen Puolustusvoimien varusmiessoittokunnassa, josta hän valmistui aliupseerina. Tällä hetkellä Niko opiskelee huilunsoittoa Turun ammattikorkeakoulussa ja jatkaa musiikin tekemistä monipuolisesti eri muodoissa.</p>
-    </section>
-  `,
-  soolotuotanto: `
-    <section class="panel">
-      <h2>Soolotuotanto</h2>
-      <p>Valikoituja julkaisuja ja äänitteitä.</p>
-    </section>
-
-    <section class="soolo-grid">
-      <div class="soolo-card panel">
-        <h3>Julkaisu</h3>
-        <div class="soolo-embeds">
-          <div class="embed embed-spotify">
-            <iframe loading="lazy" src="https://open.spotify.com/embed/track/4xiEQA4enJbKFnzzgcbjqj" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"></iframe>
-          </div>
-          <div class="embed embed-16x9">
-            <iframe loading="lazy" src="https://www.youtube.com/embed/Juo7VjB8-1w?rel=0&modestbranding=1" title="YouTube video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="panel">
-      <h3>Äänitteet</h3>
-      ${audioCard("Halusin Kertoo.mp3", "Halusin Kertoo", "soolotuotanto")}
-      ${audioCard("Taitelija.mp3", "Taitelija", "soolotuotanto")}
-    </section>
-  `,
-  teatteri: `
-    <section class="panel"><h2>Selli</h2>
-      ${audioCard("selli_2naytos6kohtaus.mp3", "Teeman huipennus", "teatteri_aanisuunnittelu")}
-      ${audioCard("selli_4naytos1kohtaus.mp3", "Järkensä menettänyt", "teatteri_aanisuunnittelu")}
-    </section>
-    <section class="panel"><h2>Mimmilehmän ja Variksen kesäpäivä laitumella</h2>
-      ${audioCard("Intromusa.mp3", "Intromusa", "teatteri_aanisuunnittelu")}
-      ${audioCard("Jännitys ja Skrätsi.mp3", "Jännitys ja Skrätsi", "teatteri_aanisuunnittelu")}
-      ${audioCard("Varis odottaa.mp3", "Varis odottaa", "teatteri_aanisuunnittelu")}
-      ${audioCard("39. Toka tanssi.mp3", "Toka tanssi", "teatteri_aanisuunnittelu")}
-      ${audioCard("Viimeinen tanssi.mp3", "Viimeinen tanssi", "teatteri_aanisuunnittelu")}
-    </section>
-    <section class="panel"><h2>Merituulet</h2>
-      ${audioCard("Merituulet.mp3", "Merituulet", "teatteri_aanisuunnittelu")}
-    </section>
-  `,
-  elektroninen: `
-    <section class="panel"><h2>Elektroninen / Kokeellinen</h2>
-      ${audioCard("1. Elämä on työ.mp3", "Elämä on työ", "elektroninen")}
-      ${audioCard("2. Isompikubeatles.mp3", "Isompikubeatles", "elektroninen")}
-      ${audioCard("3. Laskut.mp3", "Laskut", "elektroninen")}
-      ${audioCard("4. Oot Ruma.mp3", "Oot Ruma", "elektroninen")}
-      ${audioCard("5. Salaisestiseksikäs_instr.mp3", "Salaisestiseksikäs (instr.)", "elektroninen")}
-      ${audioCard("6. Dundun.mp3", "Dundun", "elektroninen")}
-    </section>
-  `,
-  yhteys: `
-    <section class="panel">
-      <h2>Palvelut / Yhteystiedot</h2>
-      <h3>Sävellys</h3>
-      <p>Teen sävellyksiä klassisesta musiikista teatteri- ja elokuvamusiikkiin sekä kokonaisiin ääniraitoihin — mihin tahansa projektiin, jonka haluat herättää eloon.</p>
-      <h3>Laulunkirjoitus</h3>
-      <p>Kirjoitan kappaleita popista, rockista ja metallista aina sooloartistien biitteihin asti. Älä epäröi pyytää myös muiden tyylilajien teoksia.</p>
-      <h3>Miksaus</h3>
-      <p>Miksaan kappaleesi tuoden siihen selkeyttä, syvyyttä ja viimeistellyn soinnin.</p>
-      <h3>Kitara-, basso- ja huilutunnit</h3>
-      <p>35€/h. Voimme luoda pitkäaikaisemman suunnitelman taitojesi kehittämiseksi tai keskittyä yksittäisiin ongelmiin, joissa koet olevasi jumissa.</p>
-      <h3>Sävellys- ja laulunkirjoitusopetus</h3>
-      <p>Mahdollista pyynnöstä!</p>
-      <h3>Yhteystiedot</h3>
-      <p>Puhelin: 045 110 7090 <em>(soitto, tekstiviesti, WhatsApp)</em><br>
-         Sähköposti: aaltonenniko989@gmail.com</p>
-    </section>
-  `
-};
-
-// Category backgrounds (subtle deep tones)
-const bgColors = {
-  bio: "var(--c-bio)",
-  soolotuotanto: "var(--c-soolo)",
-  teatteri: "var(--c-teat)",
-  elektroninen: "var(--c-elek)",
-  yhteys: "var(--c-ytx)"
-};
-
-// Loader + active nav highlight
-function loadContent(cat){
-  destroyPlayers();
-  document.getElementById('content-area').innerHTML = content[cat];
-  document.body.style.background = bgColors[cat] || "#0f1115";
-  document.querySelectorAll('.cat').forEach(a=>a.classList.toggle('active', a.dataset.cat===cat));
-  wirePlayers(document.getElementById('content-area'));
-}
+// ====
