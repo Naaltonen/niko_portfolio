@@ -6,9 +6,12 @@
 <title>Niko Aaltonen — Portfolio</title>
 <style>
 :root{
-  --ink:#e9ebef; --muted:#a9adb6; --stroke:rgba(255,255,255,.08);
+  --ink:#e9ebef;                 /* main text (changes via themes) */
+  --muted:#a9adb6;               /* secondary text */
+  --stroke:rgba(255,255,255,.08);
   --panel:rgba(20,20,24,.5);
 }
+
 /* vivid but tasteful gradients per section */
 .bg-bio  { background: radial-gradient(1200px 600px at 10% 10%,  #0f172a 0%, #0b1220 55%, #070b12 100%); }
 .bg-soolo{ background: radial-gradient(1200px 600px at 90% 10%,  #1f1d55 0%, #2f2aa6 45%, #1b1761 100%); }
@@ -16,68 +19,74 @@
 .bg-elek { background: radial-gradient(1200px 600px at 90% 90%,  #0a3b37 0%, #128277 40%, #072b29 100%); }
 .bg-ytx  { background: radial-gradient(1200px 600px at 50% 50%,  #0f172a 0%, #0b1220 50%, #070b12 100%); }
 
-*{box-sizing:border-box}
-html,body{
-  margin:0;height:100%;
-  font-family:Inter,system-ui,sans-serif;
-  color:var(--ink);
-  transition:background .7s ease;
-}
-.wrap{display:grid;grid-template-columns:260px 1fr;max-width:1400px;margin:0 auto;gap:20px;padding:20px}
-@media (max-width:900px){.wrap{grid-template-columns:1fr}}
+/* themed text/accents (no plain white) */
+.theme-bio  { --ink:#E7EEF9; --accent:#9BC2FF; }
+.theme-soolo{ --ink:#EEE9FF; --accent:#B7A6FF; }
+.theme-teat { --ink:#FFE5E5; --accent:#FF9F9F; }
+.theme-elek { --ink:#D7FFF4; --accent:#7FFFE1; }
+.theme-ytx  { --ink:#E2EEFF; --accent:#9CC3FF; }
 
-.sidebar{position:sticky;top:16px}
-.side-grid{display:grid;gap:10px}
+*{box-sizing:border-box}
+html,body{ margin:0; height:100%; font-family:Inter,system-ui,sans-serif; color:var(--ink); transition:background .7s ease,color .3s ease; }
+.wrap{ display:grid; grid-template-columns:260px 1fr; max-width:1400px; margin:0 auto; gap:20px; padding:20px; }
+@media (max-width:900px){ .wrap{ grid-template-columns:1fr; } }
+
+.sidebar{ position:sticky; top:16px; }
+.side-grid{ display:grid; gap:10px; }
 .cat{
-  display:block;padding:12px;border:1px solid var(--stroke);border-radius:8px;
-  color:var(--ink);text-decoration:none;font-weight:600;background:rgba(255,255,255,.05);transition:.2s
+  display:block; padding:12px; border:1px solid var(--stroke); border-radius:8px;
+  color:var(--ink); text-decoration:none; font-weight:600; background:rgba(255,255,255,.05); transition:.2s;
 }
-.cat:hover{background:rgba(255,255,255,.1)}
-.cat.active{outline:2px solid rgba(255,255,255,.25);background:rgba(255,255,255,.16)}
+.cat:hover{ background:rgba(255,255,255,.1); border-color:var(--accent); }
+.cat.active{ outline:2px solid color-mix(in oklab, var(--accent) 60%, transparent); background:rgba(255,255,255,.16); }
 
 .panel{
-  background:var(--panel);border:1px solid var(--stroke);
-  border-radius:12px;padding:18px;backdrop-filter:blur(8px);margin-bottom:20px
+  background:var(--panel); border:1px solid var(--stroke);
+  border-radius:12px; padding:18px; backdrop-filter:blur(8px); margin-bottom:20px;
 }
 
-/* Hero: show ENTIRE photo (no crop); letterbox uses page background */
+/* Hero — adaptive, side-by-side collages, subtle corner fade */
 .hero{
-  position:relative; border-radius:12px; overflow:hidden;
-  width:100%;
-  aspect-ratio: 16 / 9;   /* consistent shape */
-  max-height: 60vh;       /* never too tall */
-  min-height: 280px;
+  --ar: 16/9; aspect-ratio: var(--ar);
+  max-height: 60vh; min-height: 280px;
+  border-radius:12px; overflow:hidden; position:relative; width:100%;
+  /* fade corners to page background */
+  -webkit-mask-image: radial-gradient(135% 135% at 50% 50%, #000 78%, rgba(0,0,0,0) 100%);
+          mask-image: radial-gradient(135% 135% at 50% 50%, #000 78%, rgba(0,0,0,0) 100%);
 }
-.slide{position:absolute;inset:0;opacity:0;transition:opacity 1.0s ease-in-out}
-.slide.active{opacity:1}
-.slide img{
-  position:absolute;inset:0;
-  width:100%;height:100%;
-  object-fit:contain;     /* <— show whole photo */
-  object-position:center;
-  display:block;
-  background:transparent; /* empty area shows page background */
-}
+.slide{ position:absolute; inset:0; opacity:0; transition:opacity 1s ease-in-out; display:flex; }
+.slide.active{ opacity:1; }
+.slide img{ width:100%; height:100%; object-fit:contain; object-position:center; }
 
-/* Wavesurfer players */
-.ws-card{display:grid;gap:10px;padding:14px;border-radius:12px;border:1px solid var(--stroke);background:rgba(255,255,255,.04);margin-bottom:10px}
-.ws-row{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}
-.ws-play{width:44px;height:44px;border-radius:10px;border:1px solid var(--stroke);background:rgba(255,255,255,.06);color:var(--ink);font-size:18px;cursor:pointer}
-.ws-wave{height:64px}
-.ws-time{font-variant-numeric:tabular-nums;opacity:.9}
-.ws-error{font-size:.9rem; opacity:.9; color:#ffd1d1}
+/* 2-up collage slides */
+.slide.duo{ display:grid; grid-template-columns:1fr 1fr; gap:10px; align-items:center; }
+.slide.duo img{ width:100%; height:100%; object-fit:cover; border-radius:8px; }
+
+/* “gentle crop” for Kuva 2 */
+.slide img.cover-lean{ object-fit:cover; }
+
+/* Players */
+.ws-card{ display:grid; gap:10px; padding:14px; border-radius:12px; border:1px solid var(--stroke); background:rgba(255,255,255,.04); margin-bottom:10px; }
+.ws-row{ display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:center; }
+.ws-play{ width:44px; height:44px; border-radius:10px; border:1px solid var(--stroke); background:rgba(255,255,255,.06); color:var(--ink); font-size:18px; cursor:pointer; }
+.ws-wave{ height:64px; }
+.ws-time{ font-variant-numeric:tabular-nums; opacity:.9; }
+.ws-error{ font-size:.9rem; opacity:.9; color:#ffd1d1; display:none; }
 
 /* Embeds */
-.soolo-grid{display:grid;gap:16px}
-.soolo-card .soolo-embeds{display:grid;gap:12px}
-@media (min-width:740px){ .soolo-card .soolo-embeds{grid-template-columns:1fr 1fr} }
-.embed{width:100%;border-radius:12px;overflow:hidden;border:1px solid var(--stroke);background:rgba(255,255,255,.04)}
-.embed-16x9{position:relative;padding-top:56.25%}
-.embed-16x9 iframe{position:absolute;inset:0;width:100%;height:100%}
-.embed-spotify iframe{width:100%;height:152px}
+.soolo-grid{ display:grid; gap:16px; }
+.soolo-card .soolo-embeds{ display:grid; gap:12px; }
+@media (min-width:740px){ .soolo-card .soolo-embeds{ grid-template-columns:1fr 1fr; } }
+.embed{ width:100%; border-radius:12px; overflow:hidden; border:1px solid var(--stroke); background:rgba(255,255,255,.04); }
+.embed-16x9{ position:relative; padding-top:56.25%; }
+.embed-16x9 iframe{ position:absolute; inset:0; width:100%; height:100%; }
+.embed-spotify iframe{ width:100%; height:152px; }
+
+/* tiny subtitle style */
+.sub{ margin:-6px 0 12px; color:var(--muted); font-style:italic; }
 </style>
 </head>
-<body class="bg-bio">
+<body class="bg-bio theme-bio">
 
 <div class="wrap">
   <aside class="sidebar">
@@ -91,15 +100,25 @@ html,body{
   </aside>
 
   <main id="main-content">
-    <!-- Slideshow -->
+    <!-- Hero (with duo slides & gentle crop on #2) -->
     <section class="hero" id="hero">
-      <div class="slide active"><img src="images/Kuva 1.jpeg" alt=""></div>
-      <div class="slide"><img src="images/Kuva 2.jpeg" alt=""></div>
-      <div class="slide"><img src="images/Kuva 3.jpeg" alt=""></div>
-      <div class="slide"><img src="images/Kuva 4.jpeg" alt=""></div>
+      <!-- 1 + 3 together -->
+      <div class="slide duo active">
+        <img src="images/Kuva 1.jpeg" alt="">
+        <img src="images/Kuva 3.jpeg" alt="">
+      </div>
+      <!-- 2 slightly cropped larger -->
+      <div class="slide">
+        <img class="cover-lean" src="images/Kuva 2.jpeg" alt="">
+      </div>
+      <!-- 4 + 7 together -->
+      <div class="slide duo">
+        <img src="images/Kuva 4.jpeg" alt="">
+        <img src="images/Kuva 7.jpeg" alt="">
+      </div>
+      <!-- singles -->
       <div class="slide"><img src="images/Kuva 5.jpeg" alt=""></div>
       <div class="slide"><img src="images/Kuva 6.jpeg" alt=""></div>
-      <div class="slide"><img src="images/Kuva 7.jpeg" alt=""></div>
       <div class="slide"><img src="images/Kuva 8.jpeg" alt=""></div>
     </section>
 
@@ -132,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <div class="ws-wave"></div>
     <div class="ws-time">0:00 / 0:00</div>
   </div>
-  <div class="ws-error" style="display:none"></div>
+  <div class="ws-error"></div>
 </div>`
     );
   }
@@ -148,6 +167,11 @@ document.addEventListener('DOMContentLoaded', () => {
     el.style.display = '';
     el.textContent = '⚠️ ' + msg;
   }
+  function clearErr(card){
+    const el = card.querySelector('.ws-error');
+    el.style.display = 'none';
+    el.textContent = '';
+  }
 
   // Preload duration via <audio> metadata so cards aren't "empty"
   function prefetchDuration(card, url) {
@@ -157,6 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
     probe.src = url;
     probe.addEventListener('loadedmetadata', () => {
       time.textContent = `0:00 / ${fmtTime(probe.duration)}`;
+      clearErr(card);
       probe.src = '';
     });
     probe.addEventListener('error', () => {
@@ -188,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
           url
         });
         wsInstances.push(ws);
-        ws.on('ready', ()=>{ time.textContent = `0:00 / ${fmtTime(ws.getDuration())}`; });
+        ws.on('ready', ()=>{ time.textContent = `0:00 / ${fmtTime(ws.getDuration())}`; clearErr(card); });
         const onTick = (t)=>{ time.textContent = `${fmtTime(t)} / ${fmtTime(ws.getDuration())}`; };
         ws.on('timeupdate', onTick);
         ws.on('audioprocess', onTick);
@@ -208,7 +233,8 @@ document.addEventListener('DOMContentLoaded', () => {
       <section class="panel">
         <h1>Niko Aaltonen</h1>
         <p>Säveltäjä • äänisuunnittelija • monialainen taiteilija</p>
-        <p>Niko Aaltonen on säveltäjä, äänisuunnittelija ja monialainen taiteilija Turusta. Hänen taustansa musiikkituotannon ja teatterin parissa näkyy työssä, jossa yhdistyvät tunnelmalliset änimaisemat ja vahva emotionaalinen syvyys. Niko luo musiikkia ja äänisuunnittelua, jotka kertovat tarinoita, herättävät muistoja ja tukevat esitysten visuaalista ja dramaturgista kokonaisuutta. Hänen äänimaailmansa liikkuvat klassisen musiikin, pop/rockin ja elektronisen kokeellisuuden välillä – rajoja pelottomasti rikkoen. Nikon musiikillinen polku alkoi jo nuorena, kun hän osti ensimmäisen kitaransa. Vuosien varrella hän on syventynyt intohimoisesti musiikin eri osa-alueisiin ja opiskellut laajasti useita genrejä ja soittimia, kuten bassoa, rumpuja ja laulua. Hän valmistui muusikoksi Turun konservatoriosta ja palveli tämän jälkeen Puolustusvoimien varusmiessoittokunnassa, josta hän valmistui aliupseerina. Tällä hetkellä Niko opiskelee huilunsoittoa Turun ammattikorkeakoulussa ja jatkaa musiikin tekemistä monipuolisesti eri muodoissa.</p>
+        <p>Niko Aaltonen on säveltäjä, äänisuunnittelija ja monialainen taiteilija Turusta. Hänen taustansa musiikkituotannon ja teatterin parissa näkyy työssä, jossa yhdistyvät tunnelmalliset äänimaisemat ja vahva emotionaalinen syvyys. Niko luo musiikkia ja äänisuunnittelua, jotka kertovat tarinoita, herättävät muistoja ja tukevat esitysten visuaalista ja dramaturgista kokonaisuutta. Hänen äänimaailmansa liikkuvat klassisen musiikin, pop/rockin ja elektronisen kokeellisuuden välillä – rajoja pelottomasti rikkoen.</p>
+        <p>Nikon musiikillinen polku alkoi jo nuorena, kun hän osti ensimmäisen kitaransa. Vuosien varrella hän on syventynyt intohimoisesti musiikin eri osa-alueisiin ja opiskellut laajasti useita genrejä ja soittimia, kuten bassoa, rumpuja ja laulua. Hän valmistui muusikoksi Turun konservatoriosta ja palveli tämän jälkeen Puolustusvoimien varusmiessoittokunnassa, josta hän valmistui aliupseerina. Tällä hetkellä Niko opiskelee huilunsoittoa Turun ammattikorkeakoulussa ja jatkaa musiikin tekemistä monipuolisesti eri muodoissa.</p>
       </section>
     `,
     soolotuotanto: `
@@ -238,18 +264,22 @@ document.addEventListener('DOMContentLoaded', () => {
       </section>
     `,
     teatteri: `
-      <section class="panel"><h2>Selli</h2>
+      <section class="panel"><h2>Näytteitä teatterimusiikista</h2></section>
+
+      <section class="panel"><h3>Musiikkia näytelmästä Selli</h3><p class="sub">Traumaa ja sekavia tunteita</p>
         ${audioCard("selli_2naytos6kohtaus.mp3", "Teeman huipennus", "teatteri_aanisuunnittelu")}
         ${audioCard("selli_4naytos1kohtaus.mp3", "Järkensä menettänyt", "teatteri_aanisuunnittelu")}
       </section>
-      <section class="panel"><h2>Mimmilehmän ja Variksen kesäpäivä laitumella</h2>
+
+      <section class="panel"><h3>Musiikkia näytelmästä Mimmilehmän ja Variksen kesäpäivä laitumella</h3><p class="sub">Hullunkurista hauskaa</p>
         ${audioCard("Intromusa.mp3", "Intromusa", "teatteri_aanisuunnittelu")}
         ${audioCard("Jännitys ja Skrätsi.mp3", "Jännitys ja Skrätsi", "teatteri_aanisuunnittelu")}
         ${audioCard("Varis odottaa.mp3", "Varis odottaa", "teatteri_aanisuunnittelu")}
         ${audioCard("39. Toka tanssi.mp3", "Toka tanssi", "teatteri_aanisuunnittelu")}
         ${audioCard("Viimeinen tanssi.mp3", "Viimeinen tanssi", "teatteri_aanisuunnittelu")}
       </section>
-      <section class="panel"><h2>Merituulet</h2>
+
+      <section class="panel"><h3>Toivonsa kätkenyt — Rohkea ja tulinen</h3>
         ${audioCard("Merituulet.mp3", "Merituulet", "teatteri_aanisuunnittelu")}
       </section>
     `,
@@ -283,24 +313,20 @@ document.addEventListener('DOMContentLoaded', () => {
     `
   };
 
-  /* ===== Background classes + nav highlight ===== */
-  const bgClass = {
-    bio:'bg-bio', soolotuotanto:'bg-soolo', teatteri:'bg-teat', elektroninen:'bg-elek', yhteys:'bg-ytx'
-  };
-  function applyBg(cat){
-    document.body.classList.remove('bg-bio','bg-soolo','bg-teat','bg-elek','bg-ytx');
-    document.body.classList.add(bgClass[cat] || 'bg-bio');
+  /* ===== Background + theme + nav highlight ===== */
+  const bgClass = { bio:'bg-bio', soolotuotanto:'bg-soolo', teatteri:'bg-teat', elektroninen:'bg-elek', yhteys:'bg-ytx' };
+  const themeClass = { bio:'theme-bio', soolotuotanto:'theme-soolo', teatteri:'theme-teat', elektroninen:'theme-elek', yhteys:'theme-ytx' };
+
+  function applyTheme(cat){
+    document.body.classList.remove('bg-bio','bg-soolo','bg-teat','bg-elek','bg-ytx','theme-bio','theme-soolo','theme-teat','theme-elek','theme-ytx');
+    document.body.classList.add(bgClass[cat]||'bg-bio', themeClass[cat]||'theme-bio');
+    document.querySelectorAll('.cat').forEach(a => a.classList.toggle('active', a.dataset.cat===cat));
   }
 
   function renderFromHash() {
     const cat = (location.hash.replace('#','') || 'bio');
     if (!content[cat]) return;
-    // highlight nav + background
-    document.querySelectorAll('.cat').forEach(a =>
-      a.classList.toggle('active', a.dataset.cat === cat)
-    );
-    applyBg(cat);
-    // render + players
+    applyTheme(cat);
     const area = document.getElementById('content-area');
     area.innerHTML = content[cat];
     // rebuild players
