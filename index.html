@@ -1,150 +1,175 @@
 <!DOCTYPE html>
 <html lang="fi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Niko Aaltonen — Portfolio</title>
 <style>
 :root {
   --ink: #e9ebef;
   --muted: #a9adb6;
-  --stroke: rgba(255, 255, 255, 0.08);
-  --panel: rgba(20, 20, 24, 0.5);
-  --c-selli: #8b0000; /* deep dark red */
-  --c-mimmi: #006666; /* deep dark turquoise */
-  --c-meri: #8B5A00;  /* deep dark amber */
+  --stroke: rgba(255,255,255,.08);
+  --panel: rgba(20,20,24,.55);
+  --c-selli: #ff4444;
+  --c-meri: #ffbb33;
+  --c-mimmi: turquoise;
 }
-
-* { box-sizing: border-box; }
-html, body {
+* { box-sizing: border-box }
+html, body { height: 100% }
+body {
   margin: 0;
-  height: 100%;
-  font-family: Inter, system-ui, sans-serif;
   color: var(--ink);
-  background: var(--c-selli);
-  transition: background-color 1s ease;
+  background: #0b0d10;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  line-height: 1.55;
 }
 
+/* Layout */
 .wrap {
   display: grid;
   grid-template-columns: 260px 1fr;
-  max-width: 1400px;
-  margin: 0 auto;
   gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 20px;
 }
-
-@media (max-width: 900px) {
-  .wrap { grid-template-columns: 1fr; }
+@media (max-width:900px) {
+  .wrap { grid-template-columns: 1fr; padding: 12px }
 }
 
+/* Sidebar */
 .sidebar {
   position: sticky;
   top: 16px;
-}
-
-.side-grid {
+  align-self: start;
   display: grid;
   gap: 10px;
 }
-
+.side-card {
+  background: var(--panel);
+  border: 1px solid var(--stroke);
+  border-radius: 14px;
+  padding: 12px;
+}
+.side-grid { display: grid; gap: 10px }
 .cat {
   display: block;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--stroke);
-  border-radius: 8px;
-  color: var(--ink);
   text-decoration: none;
+  color: var(--ink);
   font-weight: 600;
-  transition: 0.2s;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,.04);
+  transition: .2s transform, .2s background, .2s border-color;
 }
-.cat:hover { background: rgba(255, 255, 255, 0.1); }
+.cat:hover {
+  transform: translateY(-2px);
+  background: rgba(255,255,255,.08);
+  border-color: rgba(255,255,255,.14);
+}
 
+/* Content panels */
 .panel {
   background: var(--panel);
   border: 1px solid var(--stroke);
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 18px;
   backdrop-filter: blur(8px);
-  margin-bottom: 20px;
 }
+.section { margin-bottom: 20px }
 
-/* Slideshow */
+/* Hero slideshow */
 .hero {
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: hidden;
   position: relative;
   height: min(48vh, 520px);
+  background: #0b0d10;
+  border: 1px solid var(--stroke);
 }
 .slide {
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity 1.2s ease-in-out;
-  background-size: cover;
+  transition: opacity 1.5s ease-in-out;
   background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-color: #0b0d10; /* match page bg */
 }
-.slide.active { opacity: 1; }
+.slide.active { opacity: 1 }
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(11,13,16,.35), rgba(11,13,16,.75) 65%, rgba(11,13,16,.9));
+}
+.hero-caption {
+  position: absolute;
+  left: 16px;
+  bottom: 12px;
+  right: 16px;
+  z-index: 2;
+  color: var(--muted);
+  font-size: .95rem;
+}
 
-/* Wavesurfer player */
-.ws-card {
-  display: grid;
-  gap: 10px;
-  padding: 14px;
-  border-radius: 12px;
-  border: 1px solid var(--stroke);
-  background: rgba(255, 255, 255, 0.04);
-  margin-bottom: 10px;
-}
-.ws-row {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 12px;
-  align-items: center;
-}
-.ws-play {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  border: 1px solid var(--stroke);
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--ink);
-  font-size: 18px;
-  cursor: pointer;
-}
-.ws-wave { height: 64px; }
+h1,h2,h3 { margin: 0 0 .4rem }
+h1 { font-size: clamp(28px,4.8vw,42px) }
+h2 { font-size: clamp(20px,3.2vw,26px) }
+h3 { font-size: clamp(16px,2.6vw,20px) }
+p { margin: .5rem 0 }
+
 </style>
 </head>
 <body>
 
 <div class="wrap">
+  <!-- Sidebar -->
   <aside class="sidebar">
-    <div class="side-grid">
-      <a class="cat" data-cat="bio" href="#">Bio</a>
-      <a class="cat" data-cat="soolotuotanto" href="#">Soolotuotanto</a>
-      <a class="cat" data-cat="teatteri" href="#">Teatteri / Äänisuunnittelu</a>
-      <a class="cat" data-cat="elektroninen" href="#">Elektroninen / Kokeellinen</a>
-      <a class="cat" data-cat="yhteys" href="#">Yhteystiedot</a>
+    <div class="side-card">
+      <div class="side-grid">
+        <a class="cat" href="#bio">Bio</a>
+        <a class="cat" href="#soolotuotanto">Soolotuotanto</a>
+        <a class="cat" href="#teatteri">Teatteri / Äänisuunnittelu</a>
+        <a class="cat" href="#elektroninen">Elektroninen / Kokeellinen</a>
+        <a class="cat" href="#yhteys">Yhteystiedot</a>
+      </div>
     </div>
   </aside>
 
-  <main id="main-content">
-    <!-- Slideshow -->
-    <section class="hero">
-      <div class="slide active" style="background-image:url('images/Kuva 1.jpeg')"></div>
-      <div class="slide" style="background-image:url('images/Kuva 2.jpeg')"></div>
-      <div class="slide" style="background-image:url('images/Kuva 3.jpeg')"></div>
+  <!-- Main content -->
+  <main>
+
+    <!-- Hero slideshow -->
+    <section class="section">
+      <div class="hero" aria-label="Kuva-slideshow">
+        <div class="slide active" style="background-image:url('images/Kuva 1.jpeg')"></div>
+        <div class="slide" style="background-image:url('images/Kuva 2.jpeg')"></div>
+        <div class="slide" style="background-image:url('images/Kuva 3.jpeg')"></div>
+        <div class="slide" style="background-image:url('images/Kuva 4.jpeg')"></div>
+        <div class="slide" style="background-image:url('images/Kuva 5.jpeg')"></div>
+        <div class="slide" style="background-image:url('images/Kuva 6.jpeg')"></div>
+        <div class="slide" style="background-image:url('images/Kuva 7.jpeg')"></div>
+        <div class="slide" style="background-image:url('images/Kuva 8.jpeg')"></div>
+        <div class="hero-caption">Kuvia / Niko Aaltonen</div>
+      </div>
     </section>
 
-    <!-- Content will load here -->
-    <div id="content-area"></div>
+    <!-- Bio -->
+    <section id="bio" class="section panel">
+      <h1>Niko Aaltonen</h1>
+      <p class="muted">Säveltäjä • äänisuunnittelija • monialainen taiteilija</p>
+      <hr>
+      <p>[Tähän tulee pidempi bio-versio, jonka haluat näkyvän]</p>
+    </section>
+
   </main>
 </div>
 
-<script src="https://unpkg.com/wavesurfer.js@7"></script>
 <script>
-// Slideshow
+/* Slideshow rotation */
 const slides = document.querySelectorAll('.slide');
 let idx = 0;
 setInterval(() => {
@@ -152,91 +177,7 @@ setInterval(() => {
   idx = (idx + 1) % slides.length;
   slides[idx].classList.add('active');
 }, 7000);
-
-// Content templates
-const content = {
-  bio: `
-    <section class="panel">
-      <h1>Niko Aaltonen</h1>
-      <p>Säveltäjä • äänisuunnittelija • monialainen taiteilija</p>
-      <p>Niko Aaltonen on säveltäjä, äänisuunnittelija ja monialainen taiteilija Turusta. Hänen taustansa musiikkituotannon ja teatterin parissa näkyy työssä, jossa yhdistyvät tunnelmalliset äänimaisemat ja vahva emotionaalinen syvyys. Niko luo musiikkia ja äänisuunnittelua, jotka kertovat tarinoita, herättävät muistoja ja tukevat esitysten visuaalista ja dramaturgista kokonaisuutta. Hänen äänimaailmansa liikkuvat klassisen musiikin, pop/rockin ja elektronisen kokeellisuuden välillä – rajoja pelottomasti rikkoen. Nikon musiikillinen polku alkoi jo nuorena, kun hän osti ensimmäisen kitaransa. Vuosien varrella hän on syventynyt intohimoisesti musiikin eri osa-alueisiin ja opiskellut laajasti useita genrejä ja soittimia, kuten bassoa, rumpuja ja laulua. Hän valmistui muusikoksi Turun konservatoriosta ja palveli tämän jälkeen Puolustusvoimien varusmiessoittokunnassa, josta hän valmistui aliupseerina. Tällä hetkellä Niko opiskelee musiikkipedagogiksi ja jatkaa monipuolista musiikin tekemistä eri muodoissa.</p>
-    </section>
-  `,
-  soolotuotanto: `<section class="panel"><h2>Tulossa...</h2></section>`,
-  teatteri: `
-    <section class="panel" style="background:var(--panel)">
-      <h2>Selli</h2>
-      <div class="ws-card" data-audio="audio/selli_2naytos6kohtaus.mp3" data-title="Teeman huipennus"></div>
-      <div class="ws-card" data-audio="audio/selli_4naytos1kohtaus.mp3" data-title="Järkensä menettänyt"></div>
-    </section>
-    <section class="panel" style="background:var(--panel)">
-      <h2>Mimmilehmän ja Variksen kesäpäivä laitumella</h2>
-      <div class="ws-card" data-audio="audio/Intromusa.mp3" data-title="Intromusa"></div>
-      <div class="ws-card" data-audio="audio/Jännitys ja Skrätsi.mp3" data-title="Jännitys ja Skrätsi"></div>
-    </section>
-    <section class="panel" style="background:var(--panel)">
-      <h2>Merituulet</h2>
-      <div class="ws-card" data-audio="audio/Merituulet.mp3" data-title="Merituulet"></div>
-    </section>
-  `,
-  elektroninen: `<section class="panel"><h2>Tulossa...</h2></section>`,
-  yhteys: `<section class="panel"><h2>Yhteystiedot</h2><p>sinun.sahkoposti@esimerkki.com</p></section>`
-};
-
-// Category colors
-const bgColors = {
-  bio: "#111",
-  soolotuotanto: "#222",
-  teatteri: "linear-gradient(180deg, var(--c-selli), var(--c-mimmi), var(--c-meri))",
-  elektroninen: "#222",
-  yhteys: "#111"
-};
-
-function loadContent(cat) {
-  document.getElementById('content-area').innerHTML = content[cat];
-  document.body.style.background = bgColors[cat];
-  initPlayers();
-}
-
-document.querySelectorAll('.cat').forEach(link => {
-  link.addEventListener('click', e => {
-    e.preventDefault();
-    loadContent(link.dataset.cat);
-  });
-});
-
-// Wavesurfer init
-function initPlayers() {
-  document.querySelectorAll('.ws-card').forEach(card => {
-    const url = card.dataset.audio;
-    const title = card.dataset.title;
-    card.innerHTML = `
-      <div><strong>${title}</strong></div>
-      <div class="ws-row">
-        <button class="ws-play">▶</button>
-        <div class="ws-wave"></div>
-      </div>
-    `;
-    const ws = WaveSurfer.create({
-      container: card.querySelector('.ws-wave'),
-      waveColor: 'rgba(255,255,255,0.4)',
-      progressColor: 'rgba(255,255,255,0.8)',
-      height: 64,
-      barWidth: 2,
-      barRadius: 2,
-      responsive: true,
-      url: url
-    });
-    const btn = card.querySelector('.ws-play');
-    btn.addEventListener('click', () => {
-      ws.playPause();
-      btn.textContent = ws.isPlaying() ? '⏸' : '▶';
-    });
-  });
-}
-
-// Load default view
-loadContent('bio');
 </script>
+
 </body>
 </html>
