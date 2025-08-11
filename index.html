@@ -40,7 +40,7 @@ html,body{
   border-radius:12px;padding:18px;backdrop-filter:blur(8px);margin-bottom:20px
 }
 
-/* Hero: guaranteed fill, no dark corners */
+/* Hero: show ENTIRE photo (no crop); letterbox uses page background */
 .hero{
   position:relative; border-radius:12px; overflow:hidden;
   width:100%;
@@ -48,13 +48,15 @@ html,body{
   max-height: 60vh;       /* never too tall */
   min-height: 280px;
 }
-.slide{position:absolute;inset:0;opacity:0;transition:opacity 1.2s ease-in-out}
+.slide{position:absolute;inset:0;opacity:0;transition:opacity 1.0s ease-in-out}
 .slide.active{opacity:1}
 .slide img{
   position:absolute;inset:0;
   width:100%;height:100%;
-  object-fit:cover;object-position:center;
+  object-fit:contain;     /* <— show whole photo */
+  object-position:center;
   display:block;
+  background:transparent; /* empty area shows page background */
 }
 
 /* Wavesurfer players */
@@ -105,9 +107,7 @@ html,body{
   </main>
 </div>
 
-<!-- Wavesurfer (defer load) -->
-<script defer src="https://unpkg.com/wavesurfer.js@7"></script>
-
+<script src="https://unpkg.com/wavesurfer.js@7"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   /* ===== Slideshow ===== */
@@ -178,10 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // show duration early
       prefetchDuration(card, url);
 
-      const useWaveSurfer = !!window.WaveSurfer;
-
       const ensureWS=()=>{
-        if (!useWaveSurfer) return null;
         if (ws) return ws;
         ws = WaveSurfer.create({
           container: wave,
@@ -201,29 +198,17 @@ document.addEventListener('DOMContentLoaded', () => {
         return ws;
       };
 
-      if (!useWaveSurfer) {
-        // Fallback to native audio (always works)
-        const audio = document.createElement('audio');
-        audio.controls = true;
-        audio.preload = 'metadata';
-        audio.src = url;
-        wave.replaceWith(audio);
-        btn.style.display='none';
-        audio.addEventListener('loadedmetadata', ()=>{ time.textContent = `0:00 / ${fmtTime(audio.duration)}`; });
-        audio.addEventListener('timeupdate', ()=>{ time.textContent = `${fmtTime(audio.currentTime)} / ${fmtTime(audio.duration)}`; });
-      } else {
-        btn.addEventListener('click', ()=>{ (ensureWS()||{}).playPause?.(); });
-      }
+      btn.addEventListener('click', ()=>{ ensureWS().playPause(); });
     });
   }
 
-  /* ===== Content ===== */
+  /* ===== Content (FILENAMES EXACTLY AS YOU UPLOADED) ===== */
   const content = {
     bio: `
       <section class="panel">
         <h1>Niko Aaltonen</h1>
         <p>Säveltäjä • äänisuunnittelija • monialainen taiteilija</p>
-        <p>Niko Aaltonen on säveltäjä, äänisuunnittelija ja monialainen taiteilija Turusta. Hänen taustansa musiikkituotannon ja teatterin parissa näkyy työssä, jossa yhdistyvät tunnelmalliset äänimaisemat ja vahva emotionaalinen syvyys. Niko luo musiikkia ja äänisuunnittelua, jotka kertovat tarinoita, herättävät muistoja ja tukevat esitysten visuaalista ja dramaturgista kokonaisuutta. Hänen äänimaailmansa liikkuvat klassisen musiikin, pop/rockin ja elektronisen kokeellisuuden välillä – rajoja pelottomasti rikkoen. Nikon musiikillinen polku alkoi jo nuorena, kun hän osti ensimmäisen kitaransa. Vuosien varrella hän on syventynyt intohimoisesti musiikin eri osa-alueisiin ja opiskellut laajasti useita genrejä ja soittimia, kuten bassoa, rumpuja ja laulua. Hän valmistui muusikoksi Turun konservatoriosta ja palveli tämän jälkeen Puolustusvoimien varusmiessoittokunnassa, josta hän valmistui aliupseerina. Tällä hetkellä Niko opiskelee huilunsoittoa Turun ammattikorkeakoulussa ja jatkaa musiikin tekemistä monipuolisesti eri muodoissa.</p>
+        <p>Niko Aaltonen on säveltäjä, äänisuunnittelija ja monialainen taiteilija Turusta. Hänen taustansa musiikkituotannon ja teatterin parissa näkyy työssä, jossa yhdistyvät tunnelmalliset änimaisemat ja vahva emotionaalinen syvyys. Niko luo musiikkia ja äänisuunnittelua, jotka kertovat tarinoita, herättävät muistoja ja tukevat esitysten visuaalista ja dramaturgista kokonaisuutta. Hänen äänimaailmansa liikkuvat klassisen musiikin, pop/rockin ja elektronisen kokeellisuuden välillä – rajoja pelottomasti rikkoen. Nikon musiikillinen polku alkoi jo nuorena, kun hän osti ensimmäisen kitaransa. Vuosien varrella hän on syventynyt intohimoisesti musiikin eri osa-alueisiin ja opiskellut laajasti useita genrejä ja soittimia, kuten bassoa, rumpuja ja laulua. Hän valmistui muusikoksi Turun konservatoriosta ja palveli tämän jälkeen Puolustusvoimien varusmiessoittokunnassa, josta hän valmistui aliupseerina. Tällä hetkellä Niko opiskelee huilunsoittoa Turun ammattikorkeakoulussa ja jatkaa musiikin tekemistä monipuolisesti eri muodoissa.</p>
       </section>
     `,
     soolotuotanto: `
@@ -249,7 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <section class="panel">
         <h3>Äänitteet</h3>
         ${audioCard("Halusin Kertoo.mp3", "Halusin Kertoo", "soolotuotanto")}
-        ${audioCard("Taitelija.mp3", "Taitelija", "soolotuotanto")}
+        ${audioCard("Taiteilija.mp3", "Taiteilija", "soolotuotanto")}
       </section>
     `,
     teatteri: `
@@ -271,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
     elektroninen: `
       <section class="panel"><h2>Elektroninen / Kokeellinen</h2>
         ${audioCard("1. Elämä on työ.mp3", "Elämä on työ", "elektroninen")}
-        ${audioCard("2. Isompikubeatles.mp3", "Isompikubeatles", "elektroninen")}
+        ${audioCard("2. Isompi ku beatles.mp3", "Isompi ku beatles", "elektroninen")}
         ${audioCard("3. Laskut.mp3", "Laskut", "elektroninen")}
         ${audioCard("4. Oot Ruma.mp3", "Oot Ruma", "elektroninen")}
         ${audioCard("5. Salaisestiseksikäs_instr.mp3", "Salaisestiseksikäs (instr.)", "elektroninen")}
@@ -310,13 +295,18 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderFromHash() {
     const cat = (location.hash.replace('#','') || 'bio');
     if (!content[cat]) return;
-    destroyPlayers();
-    document.getElementById('content-area').innerHTML = content[cat];
+    // highlight nav + background
     document.querySelectorAll('.cat').forEach(a =>
       a.classList.toggle('active', a.dataset.cat === cat)
     );
     applyBg(cat);
-    wirePlayers(document.getElementById('content-area'));
+    // render + players
+    const area = document.getElementById('content-area');
+    area.innerHTML = content[cat];
+    // rebuild players
+    wsInstances.forEach(ws=>{ try{ws.destroy()}catch(e){} });
+    wsInstances = [];
+    wirePlayers(area);
   }
   window.addEventListener('hashchange', renderFromHash);
   renderFromHash();
