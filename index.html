@@ -4,35 +4,29 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Niko Aaltonen — Portfolio</title>
-<link rel="preload" as="audio" href="audio/soolotuotanto/Halusin%20Kertoo.mp3">
 <style>
 :root{
   --ink:#e9ebef; --muted:#a9adb6; --stroke:rgba(255,255,255,.08); --panel:rgba(20,20,24,.5);
-  --wave-base: rgba(255,255,255,.35);
+  --wave-base: rgba(255,255,255,.35); /* unplayed waveform color */
 }
 
-/* Minimal palettes: max three per page (c1 main accent, c2 secondary, c3 neutral) */
-.theme-bio  { --ink:#E7EEF9; --c1:#9BC2FF; --c2:#A9ADB6; --c3:#D6DEEA; }
-.theme-soolo{ --ink:#EEE9FF; --c1:#B7A6FF; --c2:#A9ADB6; --c3:#E2DBFD; }
-.theme-teat { --ink:#F1EDEB; --c1:#FF6B6B; --c2:#E8C7A1; --c3:#D9D2C8; }   /* coral + sand + soft taupe */
-.theme-elek { --ink:#EAF7F4; --c1:#7FFFE1; --c2:#C4E7DF; --c3:#E3F0EE; }    /* mint + pale aqua + soft grey */
-.theme-ytx  { --ink:#FFEBDD; --c1:#FFB86B; --c2:#EED9C7; --c3:#E9EBEF; }   /* peach + cream + light ink */
+/* Background gradients */
+.bg-bio  { background: radial-gradient(1200px 600px at 10% 10%,  #0f172a 0%, #0b1220 55%, #070b12 100%); }
+.bg-soolo{ background: radial-gradient(1200px 600px at 90% 10%,  #1f1d55 0%, #2f2aa6 45%, #1b1761 100%); }
+.bg-teat { background: radial-gradient(1200px 600px at 10% 90%,  #5b0d0d 0%, #8b1e1e 40%, #2a0b0b 100%); }
+.bg-elek { background: radial-gradient(1200px 600px at 90% 90%,  #0a3b37 0%, #128277 40%, #072b29 100%); }
+/* inviting contact — warm, distinct */
+.bg-ytx  { background: radial-gradient(1200px 600px at 50% 50%,  #2a1b1b 0%, #3f2716 45%, #1b100a 100%); }
 
-/* Use c1 as page accent */
-[class^="theme-"]{ --accent: var(--c1); }
+/* Themed text/accents */
+.theme-bio  { --ink:#E7EEF9; --accent:#9BC2FF; }
+.theme-soolo{ --ink:#EEE9FF; --accent:#B7A6FF; }
+.theme-teat { --ink:#D7FFF4; --accent:#7FFFE1; }
+.theme-elek { --ink:#FFE5E5; --accent:#FF9F9F; }
+.theme-ytx  { --ink:#FFEBDD; --accent:#FFB86B; }
 
 *{box-sizing:border-box}
-html,body{ margin:0; height:100%; font-family:Inter,system-ui,sans-serif; color:var(--ink); transition:color .3s ease; }
-
-/* Cross-fading background layers (single-family bg per page; accents do the contrast) */
-.bg-base, .bg-fade{
-  position: fixed; inset: 0; z-index: -2;
-  transition: opacity .8s ease;
-  background:#0b1220;
-}
-.bg-base{ opacity:1; }
-.bg-fade{ opacity:0; z-index:-1; }
-
+html,body{ margin:0; height:100%; font-family:Inter,system-ui,sans-serif; color:var(--ink); transition:background .7s ease,color .3s ease; }
 .wrap{ display:grid; grid-template-columns:260px 1fr; max-width:1400px; margin:0 auto; gap:20px; padding:20px; }
 @media (max-width:900px){ .wrap{ grid-template-columns:1fr; } }
 
@@ -46,42 +40,15 @@ html,body{ margin:0; height:100%; font-family:Inter,system-ui,sans-serif; color:
 .cat:hover{ background:rgba(255,255,255,.1); border-color:var(--accent); }
 .cat.active{ outline:2px solid color-mix(in oklab, var(--accent) 60%, transparent); background:rgba(255,255,255,.16); color:var(--accent); }
 
-/* Panels: glassy, with thicker soft colored edge when .edge */
-.panel{
-  background:var(--panel);
-  border:1px solid var(--stroke);
-  border-radius:14px;
-  padding:18px;
-  backdrop-filter:blur(8px);
-  margin-bottom:20px;
-}
-.panel.edge{
-  --edge: var(--accent);
-  border-width:2px;
-  border-color: color-mix(in oklab, var(--edge) 70%, transparent);
-  box-shadow:
-    0 10px 34px -16px color-mix(in oklab, var(--edge) 35%, transparent),
-    inset 0 0 0 1px color-mix(in oklab, var(--edge) 35%, transparent);
-}
-.panel.edge h2,
-.panel.edge h3,
-.panel.edge strong{ color: var(--edge); }
+.panel{ background:var(--panel); border:1px solid var(--stroke); border-radius:12px; padding:18px; backdrop-filter:blur(8px); margin-bottom:20px; }
 
-/* Hero: only the edges fade, center stays vivid */
+/* Hero — side-by-side collages + gentle corner fade */
 .hero{
-  --ar:16/9; aspect-ratio:var(--ar);
-  max-height:60vh; min-height:280px;
+  --ar: 16/9; aspect-ratio: var(--ar);
+  max-height: 60vh; min-height: 280px;
   border-radius:12px; overflow:hidden; position:relative; width:100%;
   -webkit-mask-image: radial-gradient(135% 135% at 50% 50%, #000 78%, rgba(0,0,0,0) 100%);
           mask-image: radial-gradient(135% 135% at 50% 50%, #000 78%, rgba(0,0,0,0) 100%);
-}
-.hero::after{
-  content:""; position:absolute; inset:0; pointer-events:none;
-  background:
-    radial-gradient(120% 120% at 50% 50%,
-      rgba(0,0,0,0) 60%,
-      rgba(0,0,0,.28) 82%,
-      rgba(0,0,0,.48) 100%);
 }
 .slide{ position:absolute; inset:0; opacity:0; transition:opacity 1s ease-in-out; display:flex; }
 .slide.active{ opacity:1; }
@@ -94,11 +61,12 @@ html,body{ margin:0; height:100%; font-family:Inter,system-ui,sans-serif; color:
 .ws-card{ display:grid; gap:10px; padding:14px; border-radius:12px; border:1px solid var(--stroke); background:rgba(255,255,255,.04); margin-bottom:10px; }
 .ws-row{ display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:center; }
 .ws-play{ width:44px; height:44px; border-radius:10px; border:1px solid var(--stroke); background:rgba(255,255,255,.06); color:var(--ink); font-size:18px; cursor:pointer; }
-.ws-play:focus { outline:2px solid var(--edge, var(--accent)); outline-offset:2px; }
 .ws-wave{ height:64px; }
 .ws-time{ font-variant-numeric:tabular-nums; opacity:.9; }
 .ws-error{ font-size:.9rem; opacity:.9; color:#ffd1d1; display:none; }
-.ws-card.playing .ws-wave{ filter: drop-shadow(0 0 8px var(--edge, var(--accent))); }
+
+/* accent glow on active */
+.ws-card.playing .ws-wave{ filter: drop-shadow(0 0 8px var(--accent)); }
 
 /* Embeds */
 .soolo-grid{ display:grid; gap:16px; }
@@ -107,15 +75,11 @@ html,body{ margin:0; height:100%; font-family:Inter,system-ui,sans-serif; color:
 .embed{ width:100%; border-radius:12px; overflow:hidden; border:1px solid var(--stroke); background:rgba(255,255,255,.04); }
 .embed-16x9{ position:relative; padding-top:56.25%; }
 .embed-16x9 iframe{ position:absolute; inset:0; width:100%; height:100%; }
+/* compact Spotify */
 .embed-spotify iframe{ width:100%; height:152px; }
 </style>
 </head>
-
-<body class="theme-soolo"><!-- starts in Soolo theme -->
-
-<!-- Cross-fade background layers -->
-<div class="bg-base"></div>
-<div class="bg-fade"></div>
+<body class="bg-soolo theme-soolo"><!-- swapped colors: Bio <-> Soolo -->
 
 <div class="wrap">
   <aside class="sidebar">
@@ -139,12 +103,12 @@ html,body{ margin:0; height:100%; font-family:Inter,system-ui,sans-serif; color:
         <img class="cover-lean" src="images/Kuva 2.jpeg" alt="">
       </div>
       <div class="slide duo">
-        <img loading="lazy" src="images/Kuva 4.jpeg" alt="">
-        <img loading="lazy" src="images/Kuva 7.jpeg" alt="">
+        <img src="images/Kuva 4.jpeg" alt="">
+        <img src="images/Kuva 7.jpeg" alt="">
       </div>
-      <div class="slide"><img loading="lazy" src="images/Kuva 5.jpeg" alt=""></div>
-      <div class="slide"><img loading="lazy" src="images/Kuva 6.jpeg" alt=""></div>
-      <div class="slide"><img loading="lazy" src="images/Kuva 8.jpeg" alt=""></div>
+      <div class="slide"><img src="images/Kuva 5.jpeg" alt=""></div>
+      <div class="slide"><img src="images/Kuva 6.jpeg" alt=""></div>
+      <div class="slide"><img src="images/Kuva 8.jpeg" alt=""></div>
     </section>
 
     <div id="content-area"></div>
@@ -154,11 +118,10 @@ html,body{ margin:0; height:100%; font-family:Inter,system-ui,sans-serif; color:
 <script src="https://unpkg.com/wavesurfer.js@7"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  /* ===== Slideshow (respects reduced motion) ===== */
+  /* ===== Slideshow ===== */
   const slides = document.querySelectorAll('.slide');
   let idx = 0;
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (slides.length && !prefersReduced) {
+  if (slides.length) {
     setInterval(() => {
       slides[idx].classList.remove('active');
       idx = (idx + 1) % slides.length;
@@ -166,29 +129,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 7000);
   }
 
-  /* ===== Backgrounds per section (one family each) ===== */
-  const gradients = {
-    bio:           'radial-gradient(1200px 600px at 90% 10%,  #1f1d55 0%, #2f2aa6 45%, #1b1761 100%)',
-    soolotuotanto: 'radial-gradient(1200px 600px at 10% 10%,  #0f172a 0%, #0b1220 55%, #070b12 100%)',
-    teatteri:      'radial-gradient(1200px 600px at 10% 90%,  #5b0d0d 0%, #8b1e1e 40%, #2a0b0b 100%)',
-    elektroninen:  'radial-gradient(1200px 600px at 90% 90%,  #0a3b37 0%, #128277 40%, #072b29 100%)',
-    yhteys:        'radial-gradient(1200px 600px at 50% 50%,  #2a1b1b 0%, #3f2716 45%, #1b100a 100%)'
-  };
-  const baseLayer = document.querySelector('.bg-base');
-  const fadeLayer = document.querySelector('.bg-fade');
-  baseLayer.style.background = gradients.soolotuotanto;
-
-  /* ===== URL resolver (HEAD + tiny ranged GET fallback) ===== */
+  /* ===== Robust audio URL resolver ===== */
   async function headOk(url){
-    try { const r = await fetch(url, { method:'HEAD', cache:'no-store' }); if (r.ok) return true; } catch{}
-    try { const r = await fetch(url, { headers:{Range:'bytes=0-0'}, cache:'no-store' }); return r.ok || r.status===206; } catch{ return false; }
+    try {
+      const res = await fetch(url, { method:'HEAD', cache:'no-store' });
+      return res.ok;
+    } catch(e){ return false; }
   }
   async function resolveAudioUrl(folder, file){
-    const folderCands=[folder, folder[0].toUpperCase()+folder.slice(1)];
-    const fileCands=[file, file.replace(/\.mp3$/i,'.MP3'), file.toLowerCase(), file.toUpperCase()];
+    const folderCands = [folder, folder[0].toUpperCase()+folder.slice(1)]; // soolotuotanto / Soolotuotanto
+    const fileCands = [
+      file,
+      file.replace(/\.mp3$/i, '.MP3'),
+      file.toLowerCase(),
+      file.toUpperCase()
+    ];
     for (const fldr of folderCands){
       for (const fil of fileCands){
-        const url='audio/'+encodeURIComponent(fldr)+'/'+encodeURIComponent(fil);
+        const url = 'audio/' + encodeURIComponent(fldr) + '/' + encodeURIComponent(fil);
         if (await headOk(url)) return url;
       }
     }
@@ -201,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
 `<div class="ws-card" data-file="${file}" data-folder="${folder}">
   <div><strong>${title}</strong></div>
   <div class="ws-row">
-    <button class="ws-play" aria-label="Play/Pause" title="Play/Pause" tabindex="0">▶</button>
+    <button class="ws-play">▶</button>
     <div class="ws-wave"></div>
     <div class="ws-time">0:00 / 0:00</div>
   </div>
@@ -209,72 +167,70 @@ document.addEventListener('DOMContentLoaded', () => {
 </div>`
     );
   }
-  const fmtTime = s => { if (!isFinite(s)) return "0:00"; const m=Math.floor(s/60); const sec=String(Math.floor(s%60)).padStart(2,'0'); return `${m}:${sec}`; };
-  function showErr(card,msg,url){ const el=card.querySelector('.ws-error'); el.style.display=''; el.textContent='⚠️ '+msg+(url?' ('+url+')':''); }
-  function clearErr(card){ const el=card.querySelector('.ws-error'); el.style.display='none'; el.textContent=''; }
+  const fmtTime = s => {
+    if (!isFinite(s)) return "0:00";
+    const m = Math.floor(s/60);
+    const sec = Math.floor(s%60).toString().padStart(2,'0');
+    return `${m}:${sec}`;
+  };
+  function showErr(card, msg, url){
+    const el = card.querySelector('.ws-error');
+    el.style.display = '';
+    el.textContent = '⚠️ ' + msg + (url ? ' ('+url+')' : '');
+  }
+  function clearErr(card){ const el = card.querySelector('.ws-error'); el.style.display='none'; el.textContent=''; }
 
   let wsInstances = [];
-  function pauseOthers(except){ wsInstances.forEach(w=>{ if(w!==except && w.isPlaying()) w.pause(); }); }
+  function pauseOthers(except){ wsInstances.forEach(w => { if (w !== except && w.isPlaying()) w.pause(); }); }
   function destroyPlayers(){ wsInstances.forEach(w=>{ try{w.destroy()}catch(e){} }); wsInstances=[]; }
 
-  /* ===== Faster players: streaming backend + lazy init ===== */
+  /* Build players: resolve URL first so waveform is ready; single-click play; pause others
+     + progress color uses section accent; base uses --wave-base */
   async function wirePlayers(scope=document){
     const cards = scope.querySelectorAll('.ws-card');
-    if(!cards.length) return;
-
-    const waveBase = getComputedStyle(document.body).getPropertyValue('--wave-base').trim() || 'rgba(255,255,255,0.35)';
-
-    const build = async (card)=>{
-      if(card._wired) return; card._wired=true;
-
+    for (const card of cards){
       const wave=card.querySelector('.ws-wave');
-      const btn =card.querySelector('.ws-play');
+      const btn=card.querySelector('.ws-play');
       const time=card.querySelector('.ws-time');
+      const desiredFile=card.dataset.file;
+      const folder=card.dataset.folder;
 
-      const url = await resolveAudioUrl(card.dataset.folder, card.dataset.file);
-      if(!url){ showErr(card,'Tiedostoa ei löytynyt',card.dataset.file); return; }
+      const url = await resolveAudioUrl(folder, desiredFile);
+      if (!url){ showErr(card, 'Tiedostoa ei löytynyt', desiredFile); continue; }
 
-      // Panel edge color → titles + waveform progress
-      const panel = card.closest('.panel');
-      let edge = getComputedStyle(panel).getPropertyValue('--edge').trim();
-      if(!edge){ edge = getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#ffffff'; }
+      const styles = getComputedStyle(document.body);
+      const waveBase = styles.getPropertyValue('--wave-base').trim() || 'rgba(255,255,255,0.35)';
+      const accent   = styles.getPropertyValue('--accent').trim()     || '#ffffff';
 
-      const mediaEl = new Audio(); mediaEl.src=url; mediaEl.preload='metadata';
       const ws = WaveSurfer.create({
         container: wave,
-        media: mediaEl,
-        waveColor: waveBase,
-        progressColor: edge,
-        height:56, barWidth:2, barRadius:2, responsive:true,
+        waveColor: waveBase,      // unplayed part
+        progressColor: accent,    // played part (contrasts per section)
+        height:64, barWidth:2, barRadius:2, responsive:true,
+        url
       });
       wsInstances.push(ws);
 
-      mediaEl.addEventListener('loadedmetadata', ()=>{ time.textContent=`0:00 / ${fmtTime(ws.getDuration())}`; clearErr(card); });
-
-      const onTick=t=>{ time.textContent=`${fmtTime(t)} / ${fmtTime(ws.getDuration())}`; };
+      ws.on('ready', ()=>{ clearErr(card); time.textContent = `0:00 / ${fmtTime(ws.getDuration())}`; });
+      const onTick = (t)=>{ time.textContent = `${fmtTime(t)} / ${fmtTime(ws.getDuration())}`; };
       ws.on('timeupdate', onTick);
       ws.on('audioprocess', onTick);
-      ws.on('play', ()=>{ btn.textContent='⏸'; pauseOthers(ws); card.classList.add('playing'); });
-      ws.on('pause',()=>{ btn.textContent='▶'; card.classList.remove('playing'); });
-      ws.on('error',()=>{ showErr(card,'Soitin ei voinut avata tiedostoa.',url); });
+      ws.on('play',  ()=>{ btn.textContent='⏸'; pauseOthers(ws); card.classList.add('playing'); });
+      ws.on('pause', ()=>{ btn.textContent='▶'; card.classList.remove('playing'); });
+      ws.on('error', ()=>{ showErr(card, 'Soitin ei voinut avata tiedostoa.', url); });
 
-      btn.addEventListener('click', ()=> ws.playPause(), { passive:true });
-      btn.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); ws.playPause(); }});
-    };
-
-    const io=new IntersectionObserver(entries=>{
-      entries.forEach(e=>{ if(e.isIntersecting) build(e.target); });
-    },{ rootMargin:'200px 0px' });
-    cards.forEach(c=>io.observe(c));
+      btn.addEventListener('click', ()=>{ ws.playPause(); });
+    }
   }
 
-  /* ===== Content (edges alternate c1 / c2 / c3 as needed, max 3) ===== */
+  /* ===== Content ===== */
   const content = {
     bio: `
       <section class="panel">
         <h1>Niko Aaltonen</h1>
         <p>Muusikko • Säveltäjä • Pedagogi</p>
-        <p>Niko Aaltonen on säveltäjä, äänisuunnittelija ja monialainen taiteilija Turusta. Hänen taustansa musiikkituotannon ja teatterin parissa näkyy työssä, jossa yhdistyvät tunnelmalliset äänimaisemat ja vahva emotionaalinen syvyys. Niko luo musiikkia ja äänisuunnitteluja, jotka kertovat tarinoita, herättävät muistoja ja tukevat esitysten visuaalista ja dramaturgista kokonaisuutta.</p>
+        <p>Niko Aaltonen on säveltäjä, äänisuunnittelija ja monialainen taiteilija Turusta. Hänen taustansa musiikkituotannon ja teatterin parissa näkyy työssä, jossa yhdistyvät tunnelmalliset äänimaisemat ja vahva emotionaalinen syvyys. Niko luo musiikkia ja äänisuunnittelua, jotka kertovat tarinoita, herättävät muistoja ja tukevat esitysten visuaalista ja dramaturgista kokonaisuutta. Hänen äänimaailmansa liikkuvat klassisen musiikin, pop/rockin ja elektronisen kokeellisuuden välillä – rajoja pelottomasti rikkoen.</p>
+        <p>Nikon musiikillinen polku alkoi jo nuorena, kun hän osti ensimmäisen kitaransa. Vuosien varrella hän on syventynyt intohimoisesti musiikin eri osa-alueisiin ja opiskellut laajasti useita genrejä ja soittimia, kuten bassoa, rumpuja ja laulua. Hän valmistui muusikoksi Turun konservatoriosta ja palveli tämän jälkeen Puolustusvoimien varusmiessoittokunnassa, josta hän valmistui aliupseerina. Tällä hetkellä Niko opiskelee huilunsoittoa Turun ammattikorkeakoulussa ja jatkaa musiikin tekemistä monipuolisesti eri muodoissa.</p>
       </section>
     `,
     soolotuotanto: `
@@ -284,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </section>
 
       <section class="soolo-grid">
-        <div class="soolo-card panel edge" style="--edge:var(--c1)">
+        <div class="soolo-card panel">
           <h3>Julkaisu</h3>
           <div class="soolo-embeds">
             <div class="embed embed-spotify">
@@ -297,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       </section>
 
-      <section class="panel edge" style="--edge:var(--c1)">
+      <section class="panel">
         <h3>Äänitteet</h3>
         ${audioCard("Halusin Kertoo.mp3", "Halusin Kertoo", "soolotuotanto")}
         ${audioCard("Taiteilija.mp3", "Taiteilija", "soolotuotanto")}
@@ -306,18 +262,12 @@ document.addEventListener('DOMContentLoaded', () => {
     teatteri: `
       <section class="panel"><h2>Näytteitä teatterimusiikista</h2></section>
 
-      <!-- c1 (coral) -->
-      <section class="panel edge" style="--edge:var(--c1)">
-        <h3>Musiikkia näytelmästä Selli</h3>
-        <p class="sub" style="margin:-6px 0 12px;color:var(--muted);font-style:italic">Traumaa ja sekavia tunteita</p>
+      <section class="panel"><h3>Musiikkia näytelmästä Selli</h3><p class="sub" style="margin:-6px 0 12px;color:var(--muted);font-style:italic">Traumaa ja sekavia tunteita</p>
         ${audioCard("selli_2naytos6kohtaus.mp3", "Teeman huipennus", "teatteri_aanisuunnittelu")}
         ${audioCard("selli_4naytos1kohtaus.mp3", "Järkensä menettänyt", "teatteri_aanisuunnittelu")}
       </section>
 
-      <!-- c2 (sand) -->
-      <section class="panel edge" style="--edge:var(--c2)">
-        <h3>Musiikkia näytelmästä Mimmilehmän ja Variksen kesäpäivä laitumella</h3>
-        <p class="sub" style="margin:-6px 0 12px;color:var(--muted);font-style:italic">Hullunkurista hauskaa</p>
+      <section class="panel"><h3>Musiikkia näytelmästä Mimmilehmän ja Variksen kesäpäivä laitumella</h3><p class="sub" style="margin:-6px 0 12px;color:var(--muted);font-style:italic">Hullunkurista hauskaa</p>
         ${audioCard("Intromusa.mp3", "Intromusa", "teatteri_aanisuunnittelu")}
         ${audioCard("Jännitys ja Skrätsi.mp3", "Jännitys ja Skrätsi", "teatteri_aanisuunnittelu")}
         ${audioCard("Varis odottaa.mp3", "Varis odottaa", "teatteri_aanisuunnittelu")}
@@ -325,15 +275,12 @@ document.addEventListener('DOMContentLoaded', () => {
         ${audioCard("Viimeinen tanssi.mp3", "Viimeinen tanssi", "teatteri_aanisuunnittelu")}
       </section>
 
-      <!-- c3 (soft taupe neutral) -->
-      <section class="panel edge" style="--edge:var(--c3)">
-        <h3>Toivonsa kätkenyt — Rohkea ja tulinen</h3>
+      <section class="panel"><h3>Toivonsa kätkenyt — Rohkea ja tulinen</h3>
         ${audioCard("Merituulet.mp3", "Merituulet", "teatteri_aanisuunnittelu")}
       </section>
     `,
     elektroninen: `
-      <!-- c1 mint only (keep it minimal) -->
-      <section class="panel edge" style="--edge:var(--c1)"><h2>Elektroninen / Kokeellinen</h2>
+      <section class="panel"><h2>Elektroninen / Kokeellinen</h2>
         ${audioCard("1. Elämä on työ.mp3", "Elämä on työ", "elektroninen")}
         ${audioCard("2. Isompi ku beatles.mp3", "Isompi ku beatles", "elektroninen")}
         ${audioCard("3. Laskut.mp3", "Laskut", "elektroninen")}
@@ -343,17 +290,18 @@ document.addEventListener('DOMContentLoaded', () => {
       </section>
     `,
     yhteys: `
-      <!-- c1 peach for call-to-action -->
-      <section class="panel edge" style="--edge:var(--c1)">
+      <section class="panel">
         <h2>Palvelut / Yhteystiedot</h2>
         <h3>Sävellys</h3>
-        <p>Teen sävellyksiä klassisesta musiikista teatteri- ja elokuvamusiikkiin sekä kokonaisiin ääniraitoihin.</p>
+        <p>Teen sävellyksiä klassisesta musiikista teatteri- ja elokuvamusiikkiin sekä kokonaisiin ääniraitoihin — mihin tahansa projektiin, jonka haluat herättää eloon.</p>
         <h3>Laulunkirjoitus</h3>
-        <p>Pop, rock, metalli ja sooloartistien biitit — myös muita tyylejä pyynnöstä.</p>
+        <p>Kirjoitan kappaleita popista, rockista ja metallista aina sooloartistien biitteihin asti. Älä epäröi pyytää myös muiden tyylilajien teoksia.</p>
         <h3>Miksaus</h3>
-        <p>Selkeys, syvyys ja viimeistelty sointi.</p>
+        <p>Miksaan kappaleesi tuoden siihen selkeyttä, syvyyttä ja viimeistellyn soinnin.</p>
         <h3>Kitara-, basso- ja huilutunnit</h3>
-        <p>35€/h. Yksittäiset ongelmat tai pidempi suunnitelma.</p>
+        <p>35€/h. Voimme luoda pitkäaikaisemman suunnitelman taitojesi kehittämiseksi tai keskittyä yksittäisiin ongelmiin, joissa koet olevasi jumissa.</p>
+        <h3>Sävellys- ja laulunkirjoitusopetus</h3>
+        <p>Mahdollista pyynnöstä!</p>
         <h3>Yhteystiedot</h3>
         <p>Puhelin: 045 110 7090 <em>(soitto, tekstiviesti, WhatsApp)</em><br>
            Sähköposti: aaltonenniko989@gmail.com</p>
@@ -361,21 +309,16 @@ document.addEventListener('DOMContentLoaded', () => {
     `
   };
 
-  /* ===== Theme switching + bg cross-fade ===== */
+  /* ===== Color swaps (Bio<->Soolo, Teat<->Elek) ===== */
+  const bgClass = {
+    bio:'bg-soolo', soolotuotanto:'bg-bio', teatteri:'bg-elek', elektroninen:'bg-teat', yhteys:'bg-ytx'
+  };
   const themeClass = {
-    bio:'theme-soolo', soolotuotanto:'theme-bio',
-    teatteri:'theme-teat', elektroninen:'theme-elek', yhteys:'theme-ytx'
+    bio:'theme-soolo', soolotuotanto:'theme-bio', teatteri:'theme-elek', elektroninen:'theme-teat', yhteys:'theme-ytx'
   };
 
   function applyTheme(cat){
-    const body = document.body;
-    body.className = themeClass[cat] || 'theme-bio';
-
-    const newBg = gradients[cat] || gradients.soolotuotanto;
-    fadeLayer.style.background = newBg;
-    fadeLayer.style.opacity = '1';
-    setTimeout(() => { baseLayer.style.background = newBg; fadeLayer.style.opacity = '0'; }, 800);
-
+    document.body.className = (bgClass[cat]||'bg-bio') + ' ' + (themeClass[cat]||'theme-bio');
     document.querySelectorAll('.cat').forEach(a => a.classList.toggle('active', a.dataset.cat===cat));
   }
 
