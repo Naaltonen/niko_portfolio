@@ -8,16 +8,13 @@
 <style>
 :root{
   --ink:#e9ebef; --muted:#a9adb6; --stroke:rgba(255,255,255,.08); --panel:rgba(20,20,24,.5);
-  --wave-base: rgba(255,255,255,.35); /* unplayed waveform color */
+  --wave-base: rgba(255,255,255,.35);
 }
 
-/* Background gradients (used by JS cross-fade layers) */
- /* names preserved for reference; actual application happens via JS */
-
-/* Themed text/accents */
+/* Theme text/accents */
 .theme-bio  { --ink:#E7EEF9; --accent:#9BC2FF; }
 .theme-soolo{ --ink:#EEE9FF; --accent:#B7A6FF; }
-.theme-teat { --ink:#D7FFF4; --accent:#7FFFE1; }
+.theme-teat { --ink:#D7FFF4; --accent:#FF6B6B; }  /* red vibe for Teatteri headings */
 .theme-elek { --ink:#FFE5E5; --accent:#FF9F9F; }
 .theme-ytx  { --ink:#FFEBDD; --accent:#FFB86B; }
 
@@ -28,10 +25,10 @@ html,body{ margin:0; height:100%; font-family:Inter,system-ui,sans-serif; color:
 .bg-base, .bg-fade{
   position: fixed; inset: 0; z-index: -2;
   transition: opacity .8s ease;
-  background: #0b1220; /* fallback */
+  background:#0b1220;
 }
-.bg-base { opacity: 1; }
-.bg-fade { opacity: 0; z-index: -1; }
+.bg-base{ opacity:1; }
+.bg-fade{ opacity:0; z-index:-1; }
 
 .wrap{ display:grid; grid-template-columns:260px 1fr; max-width:1400px; margin:0 auto; gap:20px; padding:20px; }
 @media (max-width:900px){ .wrap{ grid-template-columns:1fr; } }
@@ -46,28 +43,49 @@ html,body{ margin:0; height:100%; font-family:Inter,system-ui,sans-serif; color:
 .cat:hover{ background:rgba(255,255,255,.1); border-color:var(--accent); }
 .cat.active{ outline:2px solid color-mix(in oklab, var(--accent) 60%, transparent); background:rgba(255,255,255,.16); color:var(--accent); }
 
-.panel{ background:var(--panel); border:1px solid var(--stroke); border-radius:12px; padding:18px; backdrop-filter:blur(8px); margin-bottom:20px; }
+/* Base panel (no tint fill, just glass) */
+.panel{
+  background:var(--panel);
+  border:1px solid var(--stroke);
+  border-radius:14px;
+  padding:18px;
+  backdrop-filter:blur(8px);
+  margin-bottom:20px;
+}
 
-/* Hero — side-by-side collages + gentle corner fade */
+/* NEW: “edged” panels — thick but soft colored edge */
+.panel.edge{
+  --edge: var(--accent); /* default if not overridden inline */
+  border-width:2px;
+  border-color: color-mix(in oklab, var(--edge) 65%, transparent);
+  box-shadow:
+    0 10px 34px -16px color-mix(in oklab, var(--edge) 35%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, var(--edge) 35%, transparent);
+}
+.panel.edge h2,
+.panel.edge h3,
+.panel.edge strong{ color: var(--edge); }
+
+/* Hero — only darken EDGES, keep center vivid */
 .hero{
-  --ar: 16/9; aspect-ratio: var(--ar);
-  max-height: 60vh; min-height: 280px;
+  --ar:16/9; aspect-ratio:var(--ar);
+  max-height:60vh; min-height:280px;
   border-radius:12px; overflow:hidden; position:relative; width:100%;
   -webkit-mask-image: radial-gradient(135% 135% at 50% 50%, #000 78%, rgba(0,0,0,0) 100%);
           mask-image: radial-gradient(135% 135% at 50% 50%, #000 78%, rgba(0,0,0,0) 100%);
 }
 .hero::after{
-  content:"";
-  position:absolute; inset:0;
-  background: radial-gradient(60% 60% at 50% 50%, rgba(0,0,0,.15) 0%, rgba(0,0,0,.45) 70%, rgba(0,0,0,.65) 100%);
-  pointer-events:none;
-  transition: opacity .6s ease;
+  content:""; position:absolute; inset:0; pointer-events:none;
+  /* clear center, darker edges */
+  background:
+    radial-gradient(120% 120% at 50% 50%,
+      rgba(0,0,0,0) 58%,
+      rgba(0,0,0,.30) 82%,
+      rgba(0,0,0,.55) 100%);
 }
 .slide{ position:absolute; inset:0; opacity:0; transition:opacity 1s ease-in-out; display:flex; }
 .slide.active{ opacity:1; }
-.slide img{ width:100%; height:100%; object-fit:contain; object-position:center;
-  opacity:.8; filter:saturate(.9) brightness(.92); transition: opacity .6s ease, filter .6s ease; }
-.slide.active img{ opacity:.75; filter:saturate(.85) brightness(.9) blur(.2px); }
+.slide img{ width:100%; height:100%; object-fit:contain; object-position:center; }
 .slide.duo{ display:grid; grid-template-columns:1fr 1fr; gap:10px; align-items:center; }
 .slide.duo img{ width:100%; height:100%; object-fit:cover; border-radius:8px; }
 .slide img.cover-lean{ object-fit:cover; }
@@ -76,13 +94,11 @@ html,body{ margin:0; height:100%; font-family:Inter,system-ui,sans-serif; color:
 .ws-card{ display:grid; gap:10px; padding:14px; border-radius:12px; border:1px solid var(--stroke); background:rgba(255,255,255,.04); margin-bottom:10px; }
 .ws-row{ display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:center; }
 .ws-play{ width:44px; height:44px; border-radius:10px; border:1px solid var(--stroke); background:rgba(255,255,255,.06); color:var(--ink); font-size:18px; cursor:pointer; }
-.ws-play:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ws-play:focus { outline:2px solid var(--edge, var(--accent)); outline-offset:2px; }
 .ws-wave{ height:64px; }
 .ws-time{ font-variant-numeric:tabular-nums; opacity:.9; }
 .ws-error{ font-size:.9rem; opacity:.9; color:#ffd1d1; display:none; }
-
-/* accent glow on active */
-.ws-card.playing .ws-wave{ filter: drop-shadow(0 0 8px var(--accent)); }
+.ws-card.playing .ws-wave{ filter: drop-shadow(0 0 8px var(--edge, var(--accent))); }
 
 /* Embeds */
 .soolo-grid{ display:grid; gap:16px; }
@@ -91,23 +107,11 @@ html,body{ margin:0; height:100%; font-family:Inter,system-ui,sans-serif; color:
 .embed{ width:100%; border-radius:12px; overflow:hidden; border:1px solid var(--stroke); background:rgba(255,255,255,.04); }
 .embed-16x9{ position:relative; padding-top:56.25%; }
 .embed-16x9 iframe{ position:absolute; inset:0; width:100%; height:100%; }
-/* compact Spotify */
 .embed-spotify iframe{ width:100%; height:152px; }
-
-/* Panel tint using a per-panel CSS var */
-.panel.tint {
-  --t: 255 255 255; /* fallback RGB */
-  background:
-    linear-gradient(180deg, rgba(var(--t) / .10), rgba(var(--t) / .06)) ,
-    var(--panel);
-  border-color: rgba(var(--t) / .28);
-  box-shadow: 0 8px 30px -12px rgba(var(--t) / .20), inset 0 1px 0 rgba(255,255,255,.04);
-}
-.panel.tint h3, .panel.tint h2 { color: color-mix(in oklab, rgb(var(--t)) 70%, var(--ink)); }
 </style>
 </head>
 
-<body class="theme-soolo"><!-- page starts in Soolo theme per your swap -->
+<body class="theme-soolo"><!-- starts in Soolo theme -->
 
 <!-- Cross-fade background layers -->
 <div class="bg-base"></div>
@@ -166,15 +170,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const gradients = {
     bio:           'radial-gradient(1200px 600px at 90% 10%,  #1f1d55 0%, #2f2aa6 45%, #1b1761 100%)', // swapped
     soolotuotanto: 'radial-gradient(1200px 600px at 10% 10%,  #0f172a 0%, #0b1220 55%, #070b12 100%)',
-    teatteri:      'radial-gradient(1200px 600px at 90% 90%,  #0a3b37 0%, #128277 40%, #072b29 100%)',
-    elektroninen:  'radial-gradient(1200px 600px at 10% 90%,  #5b0d0d 0%, #8b1e1e 40%, #2a0b0b 100%)',
+    teatteri:      'radial-gradient(1200px 600px at 10% 90%,  #5b0d0d 0%, #8b1e1e 40%, #2a0b0b 100%)', // deeper red field
+    elektroninen:  'radial-gradient(1200px 600px at 90% 90%,  #0a3b37 0%, #128277 40%, #072b29 100%)',
     yhteys:        'radial-gradient(1200px 600px at 50% 50%,  #2a1b1b 0%, #3f2716 45%, #1b100a 100%)'
   };
-
-  // Initialize base bg
   const baseLayer = document.querySelector('.bg-base');
   const fadeLayer = document.querySelector('.bg-fade');
-  baseLayer.style.background = gradients.soolotuotanto; // initial matches theme on <body>
+  baseLayer.style.background = gradients.soolotuotanto;
 
   /* ===== Robust audio URL resolver ===== */
   async function headOk(url){
@@ -182,20 +184,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch(url, { method:'HEAD', cache:'no-store' });
       if (res.ok) return true;
     } catch {}
-    // fallback: tiny ranged GET (helps on hosts that block HEAD)
     try {
       const res = await fetch(url, { headers:{ Range:'bytes=0-0' }, cache:'no-store' });
       return res.ok || res.status === 206;
     } catch { return false; }
   }
   async function resolveAudioUrl(folder, file){
-    const folderCands = [folder, folder[0].toUpperCase()+folder.slice(1)]; // soolotuotanto / Soolotuotanto
-    const fileCands = [
-      file,
-      file.replace(/\.mp3$/i, '.MP3'),
-      file.toLowerCase(),
-      file.toUpperCase()
-    ];
+    const folderCands = [folder, folder[0].toUpperCase()+folder.slice(1)];
+    const fileCands = [file, file.replace(/\.mp3$/i,'.MP3'), file.toLowerCase(), file.toUpperCase()];
     for (const fldr of folderCands){
       for (const fil of fileCands){
         const url = 'audio/' + encodeURIComponent(fldr) + '/' + encodeURIComponent(fil);
@@ -236,14 +232,13 @@ document.addEventListener('DOMContentLoaded', () => {
   function pauseOthers(except){ wsInstances.forEach(w => { if (w !== except && w.isPlaying()) w.pause(); }); }
   function destroyPlayers(){ wsInstances.forEach(w=>{ try{w.destroy()}catch(e){} }); wsInstances=[]; }
 
-  /* ===== Faster players: streaming backend + lazy init on scroll ===== */
+  /* ===== Faster players: streaming backend + lazy init ===== */
   async function wirePlayers(scope = document){
     const cards = scope.querySelectorAll('.ws-card');
     if (!cards.length) return;
 
     const styles = getComputedStyle(document.body);
     const waveBase = styles.getPropertyValue('--wave-base').trim() || 'rgba(255,255,255,0.35)';
-    const accent   = styles.getPropertyValue('--accent').trim()     || '#ffffff';
 
     const build = async (card) => {
       if (card._wired) return;
@@ -258,16 +253,24 @@ document.addEventListener('DOMContentLoaded', () => {
       const url = await resolveAudioUrl(folder, desiredFile);
       if (!url){ showErr(card, 'Tiedostoa ei löytynyt', desiredFile); return; }
 
-      // STREAMING backend: fast start
+      // find the panel edge color for this card
+      const panel = card.closest('.panel');
+      let edge = getComputedStyle(panel).getPropertyValue('--edge').trim();
+      if (!edge) {
+        // fallback to theme accent
+        edge = getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#ffffff';
+      }
+
+      // Streaming backend for quick start
       const mediaEl = new Audio();
       mediaEl.src = url;
-      mediaEl.preload = 'metadata'; // quick duration
+      mediaEl.preload = 'metadata';
 
       const ws = WaveSurfer.create({
         container: wave,
-        media: mediaEl,            // MediaElement backend (streaming)
-        waveColor: waveBase,       // unplayed
-        progressColor: accent,     // played (contrasts per section)
+        media: mediaEl,
+        waveColor: waveBase,
+        progressColor: edge,   // <-- progress follows the panel edge color
         height: 56,
         barWidth: 2,
         barRadius: 2,
@@ -293,7 +296,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     };
 
-    // Only initialize when visible
     const io = new IntersectionObserver((entries) => {
       entries.forEach(e => { if (e.isIntersecting) build(e.target); });
     }, { rootMargin: '200px 0px' });
@@ -307,7 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <section class="panel">
         <h1>Niko Aaltonen</h1>
         <p>Muusikko • Säveltäjä • Pedagogi</p>
-        <p>Niko Aaltonen on säveltäjä, äänisuunnittelija ja monialainen taiteilija Turusta. Hänen taustansa musiikkituotannon ja teatterin parissa näkyy työssä, jossa yhdistyvät tunnelmalliset äänimaisemat ja vahva emotionaalinen syvyys. Niko luo musiikkia ja äänisuunnittelua, jotka kertovat tarinoita, herättävät muistoja ja tukevat esitysten visuaalista ja dramaturgista kokonaisuutta. Hänen äänimaailmansa liikkuvat klassisen musiikin, pop/rockin ja elektronisen kokeellisuuden välillä – rajoja pelottomasti rikkoen.</p>
+        <p>Niko Aaltonen on säveltäjä, äänisuunnittelija ja monialainen taiteilija Turusta. Hänen taustansa musiikkituotannon ja teatterin parissa näkyy työssä, jossa yhdistyvät tunnelmalliset äänimaisemat ja vahva emotionaalinen syvyys. Niko luo musiikkia ja äänisuunnitteluja, jotka kertovat tarinoita, herättävät muistoja ja tukevat esitysten visuaalista ja dramaturgista kokonaisuutta. Hänen äänimaailmansa liikkuvat klassisen musiikin, pop/rockin ja elektronisen kokeellisuuden välillä – rajoja pelottomasti rikkoen.</p>
         <p>Nikon musiikillinen polku alkoi jo nuorena, kun hän osti ensimmäisen kitaransa. Vuosien varrella hän on syventynyt intohimoisesti musiikin eri osa-alueisiin ja opiskellut laajasti useita genrejä ja soittimia, kuten bassoa, rumpuja ja laulua. Hän valmistui muusikoksi Turun konservatoriosta ja palveli tämän jälkeen Puolustusvoimien varusmiessoittokunnassa, josta hän valmistui aliupseerina. Tällä hetkellä Niko opiskelee huilunsoittoa Turun ammattikorkeakoulussa ja jatkaa musiikin tekemistä monipuolisesti eri muodoissa.</p>
       </section>
     `,
@@ -318,7 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </section>
 
       <section class="soolo-grid">
-        <div class="soolo-card panel">
+        <div class="soolo-card panel edge" style="--edge:#B7A6FF">
           <h3>Julkaisu</h3>
           <div class="soolo-embeds">
             <div class="embed embed-spotify">
@@ -331,7 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       </section>
 
-      <section class="panel">
+      <section class="panel edge" style="--edge:#9BC2FF">
         <h3>Äänitteet</h3>
         ${audioCard("Halusin Kertoo.mp3", "Halusin Kertoo", "soolotuotanto")}
         ${audioCard("Taiteilija.mp3", "Taiteilija", "soolotuotanto")}
@@ -340,12 +342,18 @@ document.addEventListener('DOMContentLoaded', () => {
     teatteri: `
       <section class="panel"><h2>Näytteitä teatterimusiikista</h2></section>
 
-      <section class="panel"><h3>Musiikkia näytelmästä Selli</h3><p class="sub" style="margin:-6px 0 12px;color:var(--muted);font-style:italic">Traumaa ja sekavia tunteita</p>
+      <!-- First box: RED edge (matches section vibe) -->
+      <section class="panel edge" style="--edge:#FF6B6B">
+        <h3>Musiikkia näytelmästä Selli</h3>
+        <p class="sub" style="margin:-6px 0 12px;color:var(--muted);font-style:italic">Traumaa ja sekavia tunteita</p>
         ${audioCard("selli_2naytos6kohtaus.mp3", "Teeman huipennus", "teatteri_aanisuunnittelu")}
         ${audioCard("selli_4naytos1kohtaus.mp3", "Järkensä menettänyt", "teatteri_aanisuunnittelu")}
       </section>
 
-      <section class="panel"><h3>Musiikkia näytelmästä Mimmilehmän ja Variksen kesäpäivä laitumella</h3><p class="sub" style="margin:-6px 0 12px;color:var(--muted);font-style:italic">Hullunkurista hauskaa</p>
+      <!-- Second box: a warm mate that looks good with red -->
+      <section class="panel edge" style="--edge:#FFC46B">
+        <h3>Musiikkia näytelmästä Mimmilehmän ja Variksen kesäpäivä laitumella</h3>
+        <p class="sub" style="margin:-6px 0 12px;color:var(--muted);font-style:italic">Hullunkurista hauskaa</p>
         ${audioCard("Intromusa.mp3", "Intromusa", "teatteri_aanisuunnittelu")}
         ${audioCard("Jännitys ja Skrätsi.mp3", "Jännitys ja Skrätsi", "teatteri_aanisuunnittelu")}
         ${audioCard("Varis odottaa.mp3", "Varis odottaa", "teatteri_aanisuunnittelu")}
@@ -353,12 +361,14 @@ document.addEventListener('DOMContentLoaded', () => {
         ${audioCard("Viimeinen tanssi.mp3", "Viimeinen tanssi", "teatteri_aanisuunnittelu")}
       </section>
 
-      <section class="panel"><h3>Toivonsa kätkenyt — Rohkea ja tulinen</h3>
+      <!-- Third box: cool companion so the set feels balanced -->
+      <section class="panel edge" style="--edge:#7FFFE1">
+        <h3>Toivonsa kätkenyt — Rohkea ja tulinen</h3>
         ${audioCard("Merituulet.mp3", "Merituulet", "teatteri_aanisuunnittelu")}
       </section>
     `,
     elektroninen: `
-      <section class="panel"><h2>Elektroninen / Kokeellinen</h2>
+      <section class="panel edge" style="--edge:#FF9F9F"><h2>Elektroninen / Kokeellinen</h2>
         ${audioCard("1. Elämä on työ.mp3", "Elämä on työ", "elektroninen")}
         ${audioCard("2. Isompi ku beatles.mp3", "Isompi ku beatles", "elektroninen")}
         ${audioCard("3. Laskut.mp3", "Laskut", "elektroninen")}
@@ -368,7 +378,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </section>
     `,
     yhteys: `
-      <section class="panel">
+      <section class="panel edge" style="--edge:#FFB86B">
         <h2>Palvelut / Yhteystiedot</h2>
         <h3>Sävellys</h3>
         <p>Teen sävellyksiä klassisesta musiikista teatteri- ja elokuvamusiikkiin sekä kokonaisiin ääniraitoihin — mihin tahansa projektiin, jonka haluat herättää eloon.</p>
@@ -387,54 +397,17 @@ document.addEventListener('DOMContentLoaded', () => {
     `
   };
 
-  /* ===== Harmonious tint palettes for audio panels ===== */
-  const tintPalettes = {
-    bio:           [ [155,194,255], [196,226,255], [132,168,220] ],
-    soolotuotanto: [ [231,238,249], [183,166,255], [213,199,255] ],
-    teatteri:      [ [127,255,225], [98,214,190],  [180,255,238] ],
-    elektroninen:  [ [255,159,159], [255,200,200], [228,134,134] ],
-    yhteys:        [ [255,184,107], [255,206,154], [229,156,78]  ],
-  };
-
-  function tintAudioPanels(cat, scope=document){
-    const panels = [...scope.querySelectorAll('.panel')].filter(p => p.querySelector('.ws-card'));
-    if (!panels.length) return;
-
-    const pals = tintPalettes[cat] || tintPalettes.bio;
-    if (panels.length === 1) {
-      // single → use the section's accent color
-      const accent = getComputedStyle(document.body).getPropertyValue('--accent').trim();
-      const tmp = document.createElement('div');
-      tmp.style.color = accent;
-      document.body.appendChild(tmp);
-      const rgb = getComputedStyle(tmp).color.match(/\d+/g).map(Number);
-      document.body.removeChild(tmp);
-      panels[0].classList.add('tint');
-      panels[0].style.setProperty('--t', `${rgb[0]} ${rgb[1]} ${rgb[2]}`);
-    } else {
-      // multiple → rotate palette
-      panels.forEach((p, i) => {
-        const [r,g,b] = pals[i % pals.length];
-        p.classList.add('tint');
-        p.style.setProperty('--t', `${r} ${g} ${b}`);
-      });
-    }
-  }
-
-  /* ===== Theme switching with smooth background cross-fade ===== */
+  /* ===== Theme switching with background cross-fade ===== */
   const themeClass = {
     bio:'theme-soolo', soolotuotanto:'theme-bio',
-    teatteri:'theme-elek', elektroninen:'theme-teat', yhteys:'theme-ytx'
+    teatteri:'theme-teat', elektroninen:'theme-elek', yhteys:'theme-ytx'
   };
 
   function applyTheme(cat){
     const body = document.body;
     const newTheme = themeClass[cat] || 'theme-bio';
-
-    // update theme variables
     body.className = newTheme;
 
-    // cross-fade backgrounds
     const newBg = gradients[cat] || gradients.soolotuotanto;
     fadeLayer.style.background = newBg;
     fadeLayer.style.opacity = '1';
@@ -443,7 +416,6 @@ document.addEventListener('DOMContentLoaded', () => {
       fadeLayer.style.opacity = '0';
     }, 800);
 
-    // nav active state
     document.querySelectorAll('.cat').forEach(a => a.classList.toggle('active', a.dataset.cat===cat));
   }
 
@@ -454,7 +426,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const area = document.getElementById('content-area');
     area.innerHTML = content[cat];
     destroyPlayers();
-    tintAudioPanels(cat, area);
     await wirePlayers(area);
   }
   window.addEventListener('hashchange', renderFromHash);
